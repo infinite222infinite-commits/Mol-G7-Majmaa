@@ -6,13 +6,10 @@
     <title>Al Majmaah Project - HR Management</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- SheetJS for Excel Import -->
+    <!-- SheetJS for Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- QR Code Generator -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Firebase Cloud Realtime DB -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -148,7 +145,7 @@
             </div>
         </div>
 
-        <!-- Employee Registration Form (All Original Options Intact) -->
+        <!-- Form Box -->
         <div class="card-box admin-only">
             <h2 id="form-title" style="font-size: 16px; margin-bottom: 15px;">✨ Add New Employee Profile & Documents</h2>
             <form id="employee-form" class="form-grid" autocomplete="off">
@@ -225,7 +222,7 @@
             </form>
         </div>
 
-        <!-- Employee Directory Table (All Columns Intact) -->
+        <!-- Table Box -->
         <div class="card-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="font-size: 16px;">📋 Employee Directory & Attachments</h2>
@@ -254,7 +251,7 @@
         </div>
     </div>
 
-    <!-- Printable ID Card Modal -->
+    <!-- ID Card Modal -->
     <div id="id-card-modal" class="modal">
         <div class="id-card-wrap">
             <div class="id-card-header">
@@ -278,12 +275,7 @@
     </div>
 
     <script>
-        // Firebase Cloud Database Config
-        const firebaseConfig = { databaseURL: "https://al-majmaah-hr-default-rtdb.firebaseio.com/" };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const db = firebase.database();
-
-        let employees = [];
+        let employees = JSON.parse(localStorage.getItem('al_majmaah_employees_db')) || [];
         let userRole = 'viewer';
         let currentFiles = { photo: "", iqamaPic: "", scfhsPic: "", baladiyaPic: "" };
 
@@ -297,8 +289,8 @@
 
         function handleLogin(e) {
             e.preventDefault();
-            const u = document.getElementById('login-user').value;
-            const p = document.getElementById('login-pass').value;
+            const u = document.getElementById('login-user').value.trim();
+            const p = document.getElementById('login-pass').value.trim();
 
             if (u === 'admin' && p === 'admin123') { userRole = 'admin'; } 
             else if (u === 'user' && p === 'user123') { userRole = 'viewer'; } 
@@ -323,12 +315,12 @@
                 document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
             }
 
-            // Realtime Sync with Cloud
-            db.ref('employees').on('value', (snapshot) => {
-                const data = snapshot.val();
-                employees = data ? Object.values(data) : [];
-                renderData();
-            });
+            renderData();
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('al_majmaah_employees_db', JSON.stringify(employees));
+            renderData();
         }
 
         function handleFileRead(event, key) {
@@ -397,15 +389,22 @@
                 emergency: document.getElementById('emergency').value
             };
 
-            db.ref('employees/' + newEmp.id).set(newEmp);
+            if (editIdx >= 0) {
+                employees[editIdx] = newEmp;
+            } else {
+                employees.push(newEmp);
+            }
+
+            saveToStorage();
             this.reset();
             currentFiles = { photo: "", iqamaPic: "", scfhsPic: "", baladiyaPic: "" };
             document.getElementById('edit-index').value = "-1";
+            document.getElementById('form-title').innerText = "✨ Add New Employee Profile & Documents";
             document.getElementById('scfhs-box').classList.add('hidden');
             document.getElementById('scfhs-pic-box').classList.add('hidden');
             document.getElementById('custom-desig-box').classList.add('hidden');
             document.getElementById('custom-nationality-box').classList.add('hidden');
-            alert("✅ ملازم کا ڈیٹا اور تمام دستاویزات کلاؤڈ پر محفوظ ہو گئے ہیں!");
+            alert("✅ ملازم کا ڈیٹا کامیابی سے محفوظ ہو گیا ہے!");
         });
 
         function checkExpiryStatus(dateStr) {
@@ -452,7 +451,7 @@
                             <button onclick="sendWhatsApp('${emp.mobile}', '${emp.iqamaExp}')" class="btn-sm btn-wa">💬 WA</button>
                             ${userRole === 'admin' ? `
                                 <button onclick="editEmployee(${index})" class="btn-sm btn-edit">✏️</button>
-                                <button onclick="deleteEmployee('${emp.id}')" class="btn-sm btn-del">🗑️</button>
+                                <button onclick="deleteEmployee(${index})" class="btn-sm btn-del">🗑️</button>
                             ` : ''}
                         </td>
                     </tr>
@@ -519,12 +518,18 @@
 
         function closeModal() { document.getElementById('id-card-modal').style.display = 'none'; }
 
-        function deleteEmployee(id) {
-            if (confirm("کیا آپ اس ملازم کا ڈیٹا ڈیلیٹ کرنا چاہتے ہیں؟")) { db.ref('employees/' + id).remove(); }
+        function deleteEmployee(index) {
+            if (confirm("کیا آپ اس ملازم کا ڈیٹا ڈیلیٹ کرنا چاہتے ہیں؟")) {
+                employees.splice(index, 1);
+                saveToStorage();
+            }
         }
 
         function clearAllData() {
-            if (confirm("⚠️ تمام ڈیٹا کلاؤڈ سے ڈیلیٹ کر دیں؟")) { db.ref('employees').remove(); }
+            if (confirm("⚠️ تمام ڈیٹا ڈیلیٹ کر دیں؟")) {
+                employees = [];
+                saveToStorage();
+            }
         }
 
         function filterEmployees() {
@@ -616,9 +621,10 @@
                         emergency: row["Emergency"] || row["Emergency Contact"] || "N/A"
                     };
 
-                    db.ref('employees/' + id).set(newEmp);
+                    employees.push(newEmp);
                 });
-                alert(`✅ ${excelData.length} ملازمین کا ڈیٹا ایکسل سے کامیابی سے اپ لوڈ ہو گیا ہے!`);
+                saveToStorage();
+                alert(`✅ ${excelData.length} ملازمین کا ڈیٹا ایکسل سے کامیابی سے شامل ہو گیا ہے!`);
             };
             reader.readAsArrayBuffer(file);
         }
