@@ -204,6 +204,7 @@
             <form id="employee-form" class="form-grid" autocomplete="off">
                 <input type="hidden" id="edit-doc-id" value="">
 
+                <!-- Standard Profile Info -->
                 <div class="field-group"><label>Employee Photo</label><input type="file" id="photo" accept="image/*" onchange="handleFileRead(event, 'photo')"></div>
                 <div class="field-group"><label>Employee ID *</label><input type="text" id="empId" placeholder="EMP-101" required autocomplete="off"></div>
                 <div class="field-group"><label>Full Name *</label><input type="text" id="empName" placeholder="Full Name" required autocomplete="off"></div>
@@ -255,12 +256,6 @@
                 <div class="field-group"><label>Project / Site</label><input type="text" id="project" value="Al Majmaah Main Site" autocomplete="off"></div>
                 <div class="field-group"><label>Mobile Number</label><input type="tel" id="mobile" placeholder="966XXXXXXXXX" autocomplete="off"></div>
 
-                <!-- Work Dates & Status Tabs -->
-                <div class="field-group"><label style="color: #0284c7;">Start Working Date</label><input type="date" id="startDate"></div>
-                <div class="field-group"><label style="color: #e11d48;">Last Working Date</label><input type="date" id="lastDate"></div>
-                <div class="field-group" style="grid-column: span 2;"><label style="color: #e11d48;">Reason for Leaving</label><input type="text" id="leavingReason" placeholder="Reason for leaving / Termination details..." autocomplete="off"></div>
-                <div class="field-group"><label style="color: #e11d48;">Reason Paper / Document Scan</label><input type="file" id="reasonPicInput" accept="image/*" onchange="handleFileRead(event, 'reasonPic')"></div>
-
                 <div class="field-group"><label>Iqama Number</label><input type="text" id="iqama" placeholder="Iqama No" autocomplete="off"></div>
                 <div class="field-group"><label>Iqama Expiry Date</label><input type="date" id="iqamaExpiry"></div>
                 <div class="field-group"><label style="color: #0284c7;">Iqama Picture / Scan</label><input type="file" id="iqamaPicInput" accept="image/*" onchange="handleFileRead(event, 'iqamaPic')"></div>
@@ -278,7 +273,13 @@
                 <div class="field-group"><label>Bank Name</label><input type="text" id="bank" placeholder="Bank Name" autocomplete="off"></div>
                 <div class="field-group"><label>Emergency Contact</label><input type="text" id="emergency" placeholder="Name & Mobile" autocomplete="off"></div>
 
-                <button type="submit" id="save-btn" class="btn-stylish btn-success" style="grid-column: 1 / -1; margin-top: 10px;">💾 Save Employee Record to Cloud</button>
+                <!-- ⬇️ NAYE OPTIONS IN THE BOTTOM ⬇️ -->
+                <div class="field-group" style="border-top: 1px dashed #0ea5e9; padding-top: 10px; margin-top: 5px;"><label style="color: #0284c7;">Start Working Date</label><input type="date" id="startDate"></div>
+                <div class="field-group" style="border-top: 1px dashed #0ea5e9; padding-top: 10px; margin-top: 5px;"><label style="color: #e11d48;">Last Working Date</label><input type="date" id="lastDate"></div>
+                <div class="field-group" style="grid-column: span 2;"><label style="color: #e11d48;">Reason for Leaving</label><input type="text" id="leavingReason" placeholder="Reason for leaving / Termination details..." autocomplete="off"></div>
+                <div class="field-group"><label style="color: #e11d48;">Reason Paper / Document Scan</label><input type="file" id="reasonPicInput" accept="image/*" onchange="handleFileRead(event, 'reasonPic')"></div>
+
+                <button type="submit" id="save-btn" class="btn-stylish btn-success" style="grid-column: 1 / -1; margin-top: 15px;">💾 Save Employee Record to Cloud</button>
             </form>
         </div>
 
@@ -537,7 +538,7 @@
                 }
                 alert(`✅ ${excelData.length} Employees imported successfully to Firebase!`);
             };
-            reader.readAsArrayBuffer(file);
+            reader.readAsBuffer(file);
         };
     </script>
 
