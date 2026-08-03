@@ -72,7 +72,6 @@
         .badge-red { background: #fee2e2; color: #991b1b; }
         .hidden { display: none !important; }
 
-        /* ID Card Modal Styling */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
         .id-card-wrap { background: #fff; width: 340px; border-radius: 18px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; border: 2px solid #0ea5e9; position: relative; }
         .id-card-header { background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; padding: 12px; border-radius: 12px; margin-bottom: 15px; }
@@ -87,8 +86,7 @@
     <div id="login-container">
         <div class="login-card">
             <img id="login-logo-preview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="logo-preview" alt="Logo">
-            <h2 style="color: #0369a1; font-size: 20px;">🏢 HR Portal Login</h2>
-            <p style="font-size: 12px; color: #64748b; margin-bottom: 15px;">Admin: admin/Almajmaa123 | Viewer: user/user123</p>
+            <h2 style="color: #0369a1; font-size: 20px; margin-bottom: 20px;">🏢 HR Portal Login</h2>
             <form id="login-form" onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 12px;" autocomplete="off">
                 <input type="text" id="login-user" placeholder="Username" required autocomplete="off">
                 <input type="password" id="login-pass" placeholder="Password" required autocomplete="new-password">
@@ -147,7 +145,10 @@
 
         <!-- Form Box -->
         <div class="card-box admin-only">
-            <h2 id="form-title" style="font-size: 16px; margin-bottom: 15px;">✨ Add New Employee Profile & Documents</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h2 id="form-title" style="font-size: 16px;">✨ Add New Employee Profile & Documents</h2>
+                <button type="button" onclick="resetFormState()" class="btn-stylish" style="padding: 6px 14px; font-size: 12px; background: #0284c7;">➕ Add New Employee</button>
+            </div>
             <form id="employee-form" class="form-grid" autocomplete="off">
                 <input type="hidden" id="edit-doc-id" value="">
 
@@ -204,15 +205,16 @@
 
                 <div class="field-group"><label>Iqama Number</label><input type="text" id="iqama" placeholder="Iqama No" required autocomplete="off"></div>
                 <div class="field-group"><label>Iqama Expiry Date</label><input type="date" id="iqamaExpiry" required></div>
-                <div class="field-group"><label style="color: #0284c7;">Iqama Picture / Scan</label><input type="file" accept="image/*" onchange="handleFileRead(event, 'iqamaPic')"></div>
+                <div class="field-group"><label style="color: #0284c7;">Iqama Picture / Scan</label><input type="file" id="iqamaPicInput" accept="image/*" onchange="handleFileRead(event, 'iqamaPic')"></div>
 
                 <div class="field-group"><label>Passport Number</label><input type="text" id="passport" placeholder="Passport No" required autocomplete="off"></div>
                 <div class="field-group"><label>Passport Expiry Date</label><input type="date" id="passportExpiry" required></div>
+                <div class="field-group"><label style="color: #0284c7;">Passport Picture / Scan</label><input type="file" id="passportPicInput" accept="image/*" onchange="handleFileRead(event, 'passportPic')"></div>
 
                 <div id="scfhs-box" class="field-group hidden"><label style="color: #0284c7;">SCFHS Expiry (Medical)</label><input type="date" id="scfhsExpiry"></div>
-                <div id="scfhs-pic-box" class="field-group hidden"><label style="color: #0284c7;">SCFHS Card Picture</label><input type="file" accept="image/*" onchange="handleFileRead(event, 'scfhsPic')"></div>
+                <div id="scfhs-pic-box" class="field-group hidden"><label style="color: #0284c7;">SCFHS Card Picture</label><input type="file" id="scfhsPicInput" accept="image/*" onchange="handleFileRead(event, 'scfhsPic')"></div>
 
-                <div class="field-group"><label style="color: #0284c7;">Baladiya / Health Card Pic</label><input type="file" accept="image/*" onchange="handleFileRead(event, 'baladiyaPic')"></div>
+                <div class="field-group"><label style="color: #0284c7;">Baladiya / Health Card Pic</label><input type="file" id="baladiyaPicInput" accept="image/*" onchange="handleFileRead(event, 'baladiyaPic')"></div>
 
                 <div class="field-group"><label>Salary (SAR)</label><input type="number" id="salary" placeholder="Salary" required autocomplete="off"></div>
                 <div class="field-group"><label>Bank Name</label><input type="text" id="bank" placeholder="Bank Name" required autocomplete="off"></div>
@@ -279,7 +281,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // 🔥 Replace this with your actual Firebase project config from Firebase Console
+        // 🔥 Paste your Firebase Config here
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -295,7 +297,7 @@
 
         window.employees = [];
         window.userRole = 'viewer';
-        window.currentFiles = { photo: "", iqamaPic: "", scfhsPic: "", baladiyaPic: "" };
+        window.currentFiles = { photo: "", iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "" };
 
         // Firebase Realtime Listener
         onSnapshot(empCollection, (snapshot) => {
@@ -312,6 +314,14 @@
         document.getElementById('employee-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const editDocId = document.getElementById('edit-doc-id').value;
+            const empIdVal = document.getElementById('empId').value.trim();
+
+            // Check Duplicate ID
+            const duplicate = window.employees.find(e => e.id.toLowerCase() === empIdVal.toLowerCase() && e.firestoreId !== editDocId);
+            if (duplicate) {
+                return alert(`⚠️ اس ID (${empIdVal}) کا ملازم پہلے سے موجود ہے! ایک ID پر 2 اینٹریز ممکن نہیں ہیں۔`);
+            }
+
             const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
 
             let finalNationality = document.getElementById('nationality').value;
@@ -325,9 +335,10 @@
             const newEmp = {
                 photo: window.currentFiles.photo || existingEmp.photo || defaultAvatar,
                 iqamaPic: window.currentFiles.iqamaPic || existingEmp.iqamaPic || "",
+                passportPic: window.currentFiles.passportPic || existingEmp.passportPic || "",
                 scfhsPic: window.currentFiles.scfhsPic || existingEmp.scfhsPic || "",
                 baladiyaPic: window.currentFiles.baladiyaPic || existingEmp.baladiyaPic || "",
-                id: document.getElementById('empId').value,
+                id: empIdVal,
                 name: document.getElementById('empName').value,
                 nationality: finalNationality,
                 designation: finalDesignation,
@@ -351,14 +362,7 @@
                     await addDoc(empCollection, newEmp);
                     alert("✅ نیا ملازم Firebase پر محفوظ ہو گیا!");
                 }
-                this.reset();
-                window.currentFiles = { photo: "", iqamaPic: "", scfhsPic: "", baladiyaPic: "" };
-                document.getElementById('edit-doc-id').value = "";
-                document.getElementById('form-title').innerText = "✨ Add New Employee Profile & Documents";
-                document.getElementById('scfhs-box').classList.add('hidden');
-                document.getElementById('scfhs-pic-box').classList.add('hidden');
-                document.getElementById('custom-desig-box').classList.add('hidden');
-                document.getElementById('custom-nationality-box').classList.add('hidden');
+                resetFormState();
             } catch (err) {
                 alert("❌ ڈیٹا سیو کرنے میں مسئلہ آیا: " + err.message);
             }
@@ -409,7 +413,7 @@
                     const id = String(row["ID"] || row["Emp ID"] || `EMP-${Math.floor(Math.random()*1000)}`);
 
                     const newEmp = {
-                        photo: defaultAvatar, iqamaPic: "", scfhsPic: "", baladiyaPic: "",
+                        photo: defaultAvatar, iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "",
                         id: id,
                         name: row["Name"] || row["Full Name"] || "N/A",
                         nationality: row["Nationality"] || "Other",
@@ -447,7 +451,6 @@
             const u = document.getElementById('login-user').value.trim();
             const p = document.getElementById('login-pass').value.trim();
 
-            // 🔒 نیا پاس ورڈ: Almajmaa123
             if (u === 'admin' && p === 'Almajmaa123') { 
                 window.userRole = 'admin'; 
             } 
@@ -487,6 +490,17 @@
                 reader.onload = (e) => window.currentFiles[key] = e.target.result;
                 reader.readAsDataURL(file);
             }
+        }
+
+        function resetFormState() {
+            document.getElementById('employee-form').reset();
+            document.getElementById('edit-doc-id').value = "";
+            window.currentFiles = { photo: "", iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "" };
+            document.getElementById('form-title').innerText = "✨ Add New Employee Profile & Documents";
+            document.getElementById('scfhs-box').classList.add('hidden');
+            document.getElementById('scfhs-pic-box').classList.add('hidden');
+            document.getElementById('custom-desig-box').classList.add('hidden');
+            document.getElementById('custom-nationality-box').classList.add('hidden');
         }
 
         function handleNationalityChange() {
@@ -538,6 +552,7 @@
 
                 let docsHtml = '';
                 if(emp.iqamaPic) docsHtml += `<span class="doc-link" onclick="openImagePopup('${emp.iqamaPic}', 'Iqama')">📄 Iqama</span>`;
+                if(emp.passportPic) docsHtml += `<span class="doc-link" onclick="openImagePopup('${emp.passportPic}', 'Passport')">📄 Passport</span>`;
                 if(emp.scfhsPic) docsHtml += `<span class="doc-link" onclick="openImagePopup('${emp.scfhsPic}', 'SCFHS')">📄 SCFHS</span>`;
                 if(emp.baladiyaPic) docsHtml += `<span class="doc-link" onclick="openImagePopup('${emp.baladiyaPic}', 'Baladiya')">📄 Baladiya</span>`;
                 if(!docsHtml) docsHtml = '<span style="color:#94a3b8; font-size:11px;">No Docs</span>';
@@ -569,6 +584,9 @@
             document.getElementById('total-employees').innerText = (window.employees || []).length;
             document.getElementById('expiring-count').innerText = expiringAlerts;
             document.getElementById('total-salary').innerText = totalSalary.toLocaleString() + ' SAR';
+
+            // Re-apply search filter if user is actively searching
+            filterEmployees();
         }
 
         function editEmployee(firestoreId) {
