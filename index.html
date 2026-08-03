@@ -68,7 +68,8 @@
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
         .field-group { display: flex; flex-direction: column; gap: 6px; }
         .field-group label { font-size: 11px; font-weight: 700; color: #334155; text-transform: uppercase; }
-        input, select { background: #fff; border: 2px solid #e0f2fe; padding: 10px 12px; border-radius: 12px; font-size: 13px; outline: none; width: 100%; }
+        input, select, textarea { background: #fff; border: 2px solid #e0f2fe; padding: 10px 12px; border-radius: 12px; font-size: 13px; outline: none; width: 100%; }
+        textarea { resize: vertical; min-height: 42px; }
         .table-container { overflow-x: auto; border-radius: 16px; border: 1px solid #e2e8f0; background: #fff; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
         th { background: #f0f9ff; padding: 14px 12px; color: #0369a1; font-weight: 800; border-bottom: 2px solid #bae6fd; }
@@ -93,7 +94,7 @@
 
         /* Employee Detail Popup Modal */
         .detail-card-wrap {
-            background: #fff; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;
+            background: #fff; width: 90%; max-width: 650px; max-height: 90vh; overflow-y: auto;
             border-radius: 24px; padding: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.25);
             border: 2px solid #0ea5e9; position: relative; animation: popIn 0.3s ease-out;
         }
@@ -204,12 +205,12 @@
                 <input type="hidden" id="edit-doc-id" value="">
 
                 <div class="field-group"><label>Employee Photo</label><input type="file" id="photo" accept="image/*" onchange="handleFileRead(event, 'photo')"></div>
-                <div class="field-group"><label>Employee ID</label><input type="text" id="empId" placeholder="EMP-101" required autocomplete="off"></div>
-                <div class="field-group"><label>Full Name</label><input type="text" id="empName" placeholder="Full Name" required autocomplete="off"></div>
+                <div class="field-group"><label>Employee ID *</label><input type="text" id="empId" placeholder="EMP-101" required autocomplete="off"></div>
+                <div class="field-group"><label>Full Name *</label><input type="text" id="empName" placeholder="Full Name" required autocomplete="off"></div>
 
                 <div class="field-group">
                     <label>Nationality</label>
-                    <select id="nationality" onchange="handleNationalityChange()" required>
+                    <select id="nationality" onchange="handleNationalityChange()">
                         <option value="">Select Option</option>
                         <option value="Pakistan">Pakistan</option>
                         <option value="Bangladesh">Bangladesh</option>
@@ -229,7 +230,7 @@
 
                 <div class="field-group">
                     <label>Designation</label>
-                    <select id="designation" onchange="handleDesignationChange()" required>
+                    <select id="designation" onchange="handleDesignationChange()">
                         <option value="">Select Option</option>
                         <option value="Male Nursing Staff">Male Nursing Staff</option>
                         <option value="Female Nursing Staff">Female Nursing Staff</option>
@@ -251,15 +252,21 @@
                     <input type="text" id="customDesignation" placeholder="Type custom designation..." autocomplete="off">
                 </div>
 
-                <div class="field-group"><label>Project / Site</label><input type="text" id="project" value="Al Majmaah Main Site" required autocomplete="off"></div>
-                <div class="field-group"><label>Mobile Number</label><input type="tel" id="mobile" placeholder="966XXXXXXXXX" required autocomplete="off"></div>
+                <div class="field-group"><label>Project / Site</label><input type="text" id="project" value="Al Majmaah Main Site" autocomplete="off"></div>
+                <div class="field-group"><label>Mobile Number</label><input type="tel" id="mobile" placeholder="966XXXXXXXXX" autocomplete="off"></div>
 
-                <div class="field-group"><label>Iqama Number</label><input type="text" id="iqama" placeholder="Iqama No" required autocomplete="off"></div>
-                <div class="field-group"><label>Iqama Expiry Date</label><input type="date" id="iqamaExpiry" required></div>
+                <!-- Work Dates & Status Tabs -->
+                <div class="field-group"><label style="color: #0284c7;">Start Working Date</label><input type="date" id="startDate"></div>
+                <div class="field-group"><label style="color: #e11d48;">Last Working Date</label><input type="date" id="lastDate"></div>
+                <div class="field-group" style="grid-column: span 2;"><label style="color: #e11d48;">Reason for Leaving</label><input type="text" id="leavingReason" placeholder="Reason for leaving / Termination details..." autocomplete="off"></div>
+                <div class="field-group"><label style="color: #e11d48;">Reason Paper / Document Scan</label><input type="file" id="reasonPicInput" accept="image/*" onchange="handleFileRead(event, 'reasonPic')"></div>
+
+                <div class="field-group"><label>Iqama Number</label><input type="text" id="iqama" placeholder="Iqama No" autocomplete="off"></div>
+                <div class="field-group"><label>Iqama Expiry Date</label><input type="date" id="iqamaExpiry"></div>
                 <div class="field-group"><label style="color: #0284c7;">Iqama Picture / Scan</label><input type="file" id="iqamaPicInput" accept="image/*" onchange="handleFileRead(event, 'iqamaPic')"></div>
 
-                <div class="field-group"><label>Passport Number</label><input type="text" id="passport" placeholder="Passport No" required autocomplete="off"></div>
-                <div class="field-group"><label>Passport Expiry Date</label><input type="date" id="passportExpiry" required></div>
+                <div class="field-group"><label>Passport Number</label><input type="text" id="passport" placeholder="Passport No" autocomplete="off"></div>
+                <div class="field-group"><label>Passport Expiry Date</label><input type="date" id="passportExpiry"></div>
                 <div class="field-group"><label style="color: #0284c7;">Passport Picture / Scan</label><input type="file" id="passportPicInput" accept="image/*" onchange="handleFileRead(event, 'passportPic')"></div>
 
                 <div id="scfhs-box" class="field-group hidden"><label style="color: #0284c7;">SCFHS Expiry (Medical)</label><input type="date" id="scfhsExpiry"></div>
@@ -267,9 +274,9 @@
 
                 <div class="field-group"><label style="color: #0284c7;">Baladiya / Health Card Pic</label><input type="file" id="baladiyaPicInput" accept="image/*" onchange="handleFileRead(event, 'baladiyaPic')"></div>
 
-                <div class="field-group"><label>Salary (SAR)</label><input type="number" id="salary" placeholder="Salary" required autocomplete="off"></div>
-                <div class="field-group"><label>Bank Name</label><input type="text" id="bank" placeholder="Bank Name" required autocomplete="off"></div>
-                <div class="field-group"><label>Emergency Contact</label><input type="text" id="emergency" placeholder="Name & Mobile" required autocomplete="off"></div>
+                <div class="field-group"><label>Salary (SAR)</label><input type="number" id="salary" placeholder="Salary" autocomplete="off"></div>
+                <div class="field-group"><label>Bank Name</label><input type="text" id="bank" placeholder="Bank Name" autocomplete="off"></div>
+                <div class="field-group"><label>Emergency Contact</label><input type="text" id="emergency" placeholder="Name & Mobile" autocomplete="off"></div>
 
                 <button type="submit" id="save-btn" class="btn-stylish btn-success" style="grid-column: 1 / -1; margin-top: 10px;">💾 Save Employee Record to Cloud</button>
             </form>
@@ -324,6 +331,9 @@
                 <div class="detail-item"><span>Project / Site</span><p id="pop-project">-</p></div>
                 <div class="detail-item"><span>Mobile Number</span><p id="pop-mobile">-</p></div>
                 <div class="detail-item"><span>Salary & Bank</span><p id="pop-salary">-</p></div>
+                <div class="detail-item"><span>Start Working Date</span><p id="pop-start-date">-</p></div>
+                <div class="detail-item"><span>Last Working Date</span><p id="pop-last-date">-</p></div>
+                <div class="detail-item" style="grid-column: span 2;"><span>Reason for Leaving</span><p id="pop-reason">-</p></div>
                 <div class="detail-item"><span>Iqama Details</span><p id="pop-iqama">-</p></div>
                 <div class="detail-item"><span>Passport Details</span><p id="pop-passport">-</p></div>
                 <div class="detail-item"><span>SCFHS Expiry</span><p id="pop-scfhs">-</p></div>
@@ -360,7 +370,7 @@
         </div>
     </div>
 
-    <!-- 5. Document Viewer Modal (In-App Preview to avoid Pop-up Blocker) -->
+    <!-- 5. Document Viewer Modal (In-App Preview) -->
     <div id="doc-viewer-modal" class="modal" style="z-index: 1100;">
         <div class="doc-viewer-wrap">
             <button class="close-popup-btn" onclick="closeDocViewer()" style="color: white; background: #334155;">&times;</button>
@@ -390,7 +400,7 @@
 
         window.employees = [];
         window.userRole = 'viewer';
-        window.currentFiles = { photo: "", iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "" };
+        window.currentFiles = { photo: "", iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "", reasonPic: "" };
 
         onSnapshot(empCollection, (snapshot) => {
             window.employees = [];
@@ -428,20 +438,24 @@
                 passportPic: window.currentFiles.passportPic || existingEmp.passportPic || "",
                 scfhsPic: window.currentFiles.scfhsPic || existingEmp.scfhsPic || "",
                 baladiyaPic: window.currentFiles.baladiyaPic || existingEmp.baladiyaPic || "",
+                reasonPic: window.currentFiles.reasonPic || existingEmp.reasonPic || "",
                 id: empIdVal,
-                name: document.getElementById('empName').value,
-                nationality: finalNationality,
-                designation: finalDesignation,
-                project: document.getElementById('project').value,
-                mobile: document.getElementById('mobile').value,
-                iqama: document.getElementById('iqama').value,
-                iqamaExp: document.getElementById('iqamaExpiry').value,
-                passport: document.getElementById('passport').value,
-                passportExp: document.getElementById('passportExpiry').value,
+                name: document.getElementById('empName').value || 'N/A',
+                nationality: finalNationality || 'N/A',
+                designation: finalDesignation || 'N/A',
+                project: document.getElementById('project').value || 'N/A',
+                mobile: document.getElementById('mobile').value || 'N/A',
+                startDate: document.getElementById('startDate').value || '',
+                lastDate: document.getElementById('lastDate').value || '',
+                leavingReason: document.getElementById('leavingReason').value || '',
+                iqama: document.getElementById('iqama').value || 'N/A',
+                iqamaExp: document.getElementById('iqamaExpiry').value || '',
+                passport: document.getElementById('passport').value || 'N/A',
+                passportExp: document.getElementById('passportExpiry').value || '',
                 scfhsExp: document.getElementById('scfhsExpiry').value || '',
                 salary: parseFloat(document.getElementById('salary').value) || 0,
-                bank: document.getElementById('bank').value,
-                emergency: document.getElementById('emergency').value
+                bank: document.getElementById('bank').value || 'N/A',
+                emergency: document.getElementById('emergency').value || 'N/A'
             };
 
             try {
@@ -500,13 +514,16 @@
                     const id = String(row["ID"] || row["Emp ID"] || `EMP-${Math.floor(Math.random()*1000)}`);
 
                     const newEmp = {
-                        photo: defaultAvatar, iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "",
+                        photo: defaultAvatar, iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "", reasonPic: "",
                         id: id,
                         name: row["Name"] || row["Full Name"] || "N/A",
                         nationality: row["Nationality"] || "Other",
                         designation: row["Designation"] || "Other",
                         project: row["Project"] || "Al Majmaah Main Site",
                         mobile: String(row["Mobile"] || row["Mobile Number"] || ""),
+                        startDate: row["Start Date"] || "",
+                        lastDate: row["Last Date"] || "",
+                        leavingReason: row["Leaving Reason"] || "",
                         iqama: String(row["Iqama"] || row["Iqama Number"] || ""),
                         iqamaExp: row["Iqama Expiry"] || row["IqamaExp"] || "",
                         passport: String(row["Passport"] || row["Passport Number"] || ""),
@@ -584,7 +601,7 @@
         function resetFormState() {
             document.getElementById('employee-form').reset();
             document.getElementById('edit-doc-id').value = "";
-            window.currentFiles = { photo: "", iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "" };
+            window.currentFiles = { photo: "", iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "", reasonPic: "" };
             document.getElementById('form-title').innerText = "✨ Add New Employee Profile & Documents";
             document.getElementById('scfhs-box').classList.add('hidden');
             document.getElementById('scfhs-pic-box').classList.add('hidden');
@@ -710,6 +727,10 @@
             document.getElementById('pop-mobile').innerText = emp.mobile || 'N/A';
             document.getElementById('pop-salary').innerText = `${emp.salary || 0} SAR (${emp.bank || 'N/A'})`;
 
+            document.getElementById('pop-start-date').innerText = emp.startDate || 'N/A';
+            document.getElementById('pop-last-date').innerText = emp.lastDate || 'N/A';
+            document.getElementById('pop-reason').innerText = emp.leavingReason || 'N/A';
+
             document.getElementById('pop-iqama').innerHTML = `${emp.iqama || 'N/A'}<br><span class="badge ${iqamaStatus.class}">Exp: ${iqamaStatus.badge}</span>`;
             document.getElementById('pop-passport').innerHTML = `${emp.passport || 'N/A'}<br><span class="badge ${passportStatus.class}">Exp: ${passportStatus.badge}</span>`;
             document.getElementById('pop-scfhs').innerHTML = emp.scfhsExp ? `<span class="badge ${scfhsStatus.class}">Exp: ${scfhsStatus.badge}</span>` : 'N/A';
@@ -720,6 +741,7 @@
             if(emp.passportPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'passportPic', 'Passport Document')">📄 Passport Scan</button>`;
             if(emp.scfhsPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'scfhsPic', 'SCFHS Document')">📄 SCFHS Card</button>`;
             if(emp.baladiyaPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'baladiyaPic', 'Baladiya Document')">📄 Baladiya Card</button>`;
+            if(emp.reasonPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'reasonPic', 'Leaving Reason Paper')">📄 Reason Paper Scan</button>`;
             if(!docsHtml) docsHtml = '<span style="color:#94a3b8; font-size:12px;">No documents attached</span>';
 
             document.getElementById('pop-docs').innerHTML = docsHtml;
@@ -751,22 +773,25 @@
             document.getElementById('edit-doc-id').value = firestoreId;
             document.getElementById('empId').value = emp.id;
             document.getElementById('empName').value = emp.name;
-            document.getElementById('project').value = emp.project;
-            document.getElementById('mobile').value = emp.mobile;
-            document.getElementById('iqama').value = emp.iqama;
-            document.getElementById('iqamaExpiry').value = emp.iqamaExp;
-            document.getElementById('passport').value = emp.passport;
-            document.getElementById('passportExpiry').value = emp.passportExp;
+            document.getElementById('project').value = emp.project || '';
+            document.getElementById('mobile').value = emp.mobile || '';
+            document.getElementById('startDate').value = emp.startDate || '';
+            document.getElementById('lastDate').value = emp.lastDate || '';
+            document.getElementById('leavingReason').value = emp.leavingReason || '';
+            document.getElementById('iqama').value = emp.iqama || '';
+            document.getElementById('iqamaExpiry').value = emp.iqamaExp || '';
+            document.getElementById('passport').value = emp.passport || '';
+            document.getElementById('passportExpiry').value = emp.passportExp || '';
             document.getElementById('scfhsExpiry').value = emp.scfhsExp || '';
-            document.getElementById('salary').value = emp.salary;
-            document.getElementById('bank').value = emp.bank;
-            document.getElementById('emergency').value = emp.emergency;
+            document.getElementById('salary').value = emp.salary || '';
+            document.getElementById('bank').value = emp.bank || '';
+            document.getElementById('emergency').value = emp.emergency || '';
 
-            document.getElementById('nationality').value = emp.nationality;
+            document.getElementById('nationality').value = emp.nationality || '';
             handleNationalityChange();
             if (document.getElementById('nationality').value === 'Other') { document.getElementById('customNationality').value = emp.nationality; }
 
-            document.getElementById('designation').value = emp.designation;
+            document.getElementById('designation').value = emp.designation || '';
             handleDesignationChange();
             if (document.getElementById('designation').value === 'Other') { document.getElementById('customDesignation').value = emp.designation; }
 
@@ -852,9 +877,9 @@
 
         function exportToCSV() {
             if(!window.employees || window.employees.length === 0) return alert('No records to export!');
-            let csv = 'ID,Name,Nationality,Designation,Project,Mobile,Iqama,Iqama Expiry,Passport,Passport Expiry,SCFHS Expiry,Salary,Bank,Emergency Contact\n';
+            let csv = 'ID,Name,Nationality,Designation,Project,Mobile,Start Date,Last Date,Leaving Reason,Iqama,Iqama Expiry,Passport,Passport Expiry,SCFHS Expiry,Salary,Bank,Emergency Contact\n';
             window.employees.forEach(e => {
-                csv += `"${e.id}","${e.name}","${e.nationality}","${e.designation}","${e.project}","${e.mobile}","${e.iqama}","${e.iqamaExp}","${e.passport}","${e.passportExp}","${e.scfhsExp}","${e.salary}","${e.bank}","${e.emergency}"\n`;
+                csv += `"${e.id}","${e.name}","${e.nationality}","${e.designation}","${e.project}","${e.mobile}","${e.startDate}","${e.lastDate}","${e.leavingReason}","${e.iqama}","${e.iqamaExp}","${e.passport}","${e.passportExp}","${e.scfhsExp}","${e.salary}","${e.bank}","${e.emergency}"\n`;
             });
             const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'Al_Majmaah_Employees.csv'; a.click();
         }
