@@ -39,10 +39,12 @@
         .btn-stylish:hover { transform: translateY(-2px); }
         .btn-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
         .btn-danger { background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); }
-        .btn-sm { padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; text-decoration: none; display: inline-block; margin: 2px; }
-        .btn-edit { background: #e0f2fe; color: #0369a1; }
+        .btn-sm { padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin: 2px; }
+        .btn-view { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .btn-view:hover { background: #0284c7; color: white; }
+        .btn-edit { background: #fef3c7; color: #b45309; }
         .btn-del { background: #fee2e2; color: #991b1b; }
-        .btn-card { background: #fef3c7; color: #b45309; }
+        .btn-card { background: #f3e8ff; color: #6b21a8; }
         .btn-wa { background: #dcfce7; color: #15803d; }
         #app-container { display: none; max-width: 1400px; margin: 0 auto; }
         header {
@@ -68,22 +70,54 @@
         .field-group label { font-size: 11px; font-weight: 700; color: #334155; text-transform: uppercase; }
         input, select { background: #fff; border: 2px solid #e0f2fe; padding: 10px 12px; border-radius: 12px; font-size: 13px; outline: none; width: 100%; }
         .table-container { overflow-x: auto; border-radius: 16px; border: 1px solid #e2e8f0; background: #fff; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
-        th { background: #f0f9ff; padding: 12px; color: #0369a1; font-weight: 800; border-bottom: 2px solid #bae6fd; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        th { background: #f0f9ff; padding: 14px 12px; color: #0369a1; font-weight: 800; border-bottom: 2px solid #bae6fd; }
         td { padding: 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
         .emp-thumb { width: 45px; height: 45px; border-radius: 12px; object-fit: cover; border: 2px solid #bae6fd; }
-        .doc-link { font-size: 11px; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 4px 8px; border-radius: 8px; text-decoration: none; cursor: pointer; margin-right: 4px; display: inline-block; margin-top: 3px; }
+        .doc-link { font-size: 11px; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 6px 12px; border-radius: 8px; text-decoration: none; cursor: pointer; margin-right: 4px; display: inline-block; margin-top: 3px; border: 1px solid #bae6fd; }
+        .doc-link:hover { background: #0284c7; color: #fff; }
         .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
         .badge-green { background: #d1fae5; color: #065f46; }
         .badge-red { background: #fee2e2; color: #991b1b; }
         .hidden { display: none !important; }
 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
+        /* Generic Modal Style */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(6px); justify-content: center; align-items: center; }
+        
+        /* ID Card Modal */
         .id-card-wrap { background: #fff; width: 340px; border-radius: 18px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; border: 2px solid #0ea5e9; position: relative; }
         .id-card-header { background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; padding: 12px; border-radius: 12px; margin-bottom: 15px; }
         .id-card-photo { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #0ea5e9; margin-bottom: 10px; }
         .id-card-info { font-size: 12px; text-align: left; line-height: 1.8; margin-bottom: 15px; }
         #qrcode { display: flex; justify-content: center; margin-top: 10px; }
+
+        /* Employee Detail Popup Modal */
+        .detail-card-wrap {
+            background: #fff; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;
+            border-radius: 24px; padding: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            border: 2px solid #0ea5e9; position: relative; animation: popIn 0.3s ease-out;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .detail-header { display: flex; align-items: center; gap: 16px; border-bottom: 2px solid #e0f2fe; padding-bottom: 16px; margin-bottom: 20px; }
+        .detail-header img { width: 75px; height: 75px; border-radius: 20px; object-fit: cover; border: 3px solid #0ea5e9; }
+        .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px; }
+        .detail-item { background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .detail-item span { display: block; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
+        .detail-item p { font-size: 13px; font-weight: 700; color: #0f172a; word-break: break-all; }
+        .close-popup-btn { position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; font-size: 18px; font-weight: bold; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; color: #64748b; }
+        .close-popup-btn:hover { background: #e2e8f0; color: #0f172a; }
+
+        /* Document Viewer Modal */
+        .doc-viewer-wrap {
+            background: #0f172a; width: 90%; max-width: 800px; max-height: 90vh;
+            border-radius: 20px; padding: 20px; text-align: center; position: relative;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 1px solid #334155;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .doc-viewer-wrap img { max-width: 100%; max-height: 75vh; border-radius: 12px; object-fit: contain; }
 
         .footer-credits {
             text-align: center; margin-top: 30px; padding: 15px;
@@ -121,7 +155,6 @@
                 </div>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                <!-- background اور logo تبدیلی والے اپشنز پر بھی admin-only کلاس لگا دی گئی ہے -->
                 <div class="customization-panel admin-only">
                     <span>🖼️ BG:</span>
                     <input type="file" accept="image/*" onchange="uploadCustomBackground(event)" style="display:none;" id="bg-input">
@@ -245,7 +278,7 @@
         <!-- Table Box -->
         <div class="card-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h2 style="font-size: 16px;" id="table-heading">📋 Employee Directory & Attachments</h2>
+                <h2 style="font-size: 16px;" id="table-heading">📋 Employee Directory</h2>
                 <input type="text" id="search-input" onkeyup="filterEmployees()" placeholder="🔍 Search ID, Iqama, Passport or Name..." style="max-width: 300px;">
             </div>
             <div class="table-container">
@@ -254,14 +287,10 @@
                         <tr>
                             <th>Photo</th>
                             <th>Emp ID</th>
-                            <th>Name & Mobile</th>
+                            <th>Name</th>
                             <th>Designation</th>
-                            <th>Iqama & Expiry</th>
-                            <th>Passport & Expiry</th>
-                            <th>SCFHS Expiry</th>
-                            <th>Attached Docs</th>
-                            <th>Salary & Bank</th>
-                            <th>Emergency</th>
+                            <th>Project</th>
+                            <th>Mobile</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -277,7 +306,38 @@
         </div>
     </div>
 
-    <!-- ID Card Modal -->
+    <!-- 3. Employee Full Detail Modal (POPUP MODAL) -->
+    <div id="detail-modal" class="modal">
+        <div class="detail-card-wrap">
+            <button class="close-popup-btn" onclick="closeDetailModal()">&times;</button>
+            <div class="detail-header">
+                <img id="pop-photo" src="" alt="Photo">
+                <div>
+                    <h3 id="pop-name" style="font-size: 18px; color: #0f172a;">-</h3>
+                    <p id="pop-desig" style="color: #0284c7; font-size: 13px; font-weight: 700;">-</p>
+                    <span id="pop-id" class="badge badge-green" style="margin-top: 5px;">-</span>
+                </div>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-item"><span>Nationality</span><p id="pop-nat">-</p></div>
+                <div class="detail-item"><span>Project / Site</span><p id="pop-project">-</p></div>
+                <div class="detail-item"><span>Mobile Number</span><p id="pop-mobile">-</p></div>
+                <div class="detail-item"><span>Salary & Bank</span><p id="pop-salary">-</p></div>
+                <div class="detail-item"><span>Iqama Details</span><p id="pop-iqama">-</p></div>
+                <div class="detail-item"><span>Passport Details</span><p id="pop-passport">-</p></div>
+                <div class="detail-item"><span>SCFHS Expiry</span><p id="pop-scfhs">-</p></div>
+                <div class="detail-item"><span>Emergency Contact</span><p id="pop-emergency">-</p></div>
+            </div>
+
+            <div style="background: #f1f5f9; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <span style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 8px;">Attached Documents</span>
+                <div id="pop-docs" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. ID Card Modal -->
     <div id="id-card-modal" class="modal">
         <div class="id-card-wrap">
             <div class="id-card-header">
@@ -297,6 +357,15 @@
                 <button onclick="window.print()" class="btn-stylish btn-success" style="padding: 6px 12px; font-size: 11px;">🖨️ Print</button>
                 <button onclick="closeModal()" class="btn-stylish btn-danger" style="padding: 6px 12px; font-size: 11px;">❌ Close</button>
             </div>
+        </div>
+    </div>
+
+    <!-- 5. Document Viewer Modal (In-App Preview to avoid Pop-up Blocker) -->
+    <div id="doc-viewer-modal" class="modal" style="z-index: 1100;">
+        <div class="doc-viewer-wrap">
+            <button class="close-popup-btn" onclick="closeDocViewer()" style="color: white; background: #334155;">&times;</button>
+            <h3 id="doc-title" style="color: white; margin-bottom: 15px; font-size: 16px;">Document Viewer</h3>
+            <img id="doc-img-target" src="" alt="Document Preview">
         </div>
     </div>
 
@@ -340,7 +409,7 @@
 
             const duplicate = window.employees.find(e => e.id.toLowerCase() === empIdVal.toLowerCase() && e.firestoreId !== editDocId);
             if (duplicate) {
-                return alert(`⚠️ اس ID (${empIdVal}) کا ملازم پہلے سے موجود ہے! ایک ID پر 2 اینٹریز ممکن نہیں ہیں۔`);
+                return alert(`⚠️ Employee with ID (${empIdVal}) already exists!`);
             }
 
             const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
@@ -378,37 +447,37 @@
             try {
                 if (editDocId) {
                     await updateDoc(doc(db, "employees", editDocId), newEmp);
-                    alert("✅ ملازم کا ڈیٹا Firebase پر اپڈیٹ ہو گیا!");
+                    alert("✅ Employee record updated successfully on Firebase!");
                 } else {
                     await addDoc(empCollection, newEmp);
-                    alert("✅ نیا ملازم Firebase پر محفوظ ہو گیا!");
+                    alert("✅ New employee saved successfully to Firebase!");
                 }
                 resetFormState();
             } catch (err) {
-                alert("❌ ڈیٹا سیو کرنے میں مسئلہ آیا: " + err.message);
+                alert("❌ Error saving data: " + err.message);
             }
         });
 
         window.deleteEmployee = async function(firestoreId) {
-            if (confirm("کیا آپ اس ملازم کا ڈیٹا Firebase سے ڈیلیٹ کرنا چاہتے ہیں؟")) {
+            if (confirm("Are you sure you want to delete this employee from Firebase?")) {
                 try {
                     await deleteDoc(doc(db, "employees", firestoreId));
                 } catch (e) {
-                    alert("خطا: " + e.message);
+                    alert("Error: " + e.message);
                 }
             }
         };
 
         window.clearAllData = async function() {
-            if (confirm("⚠️ تمام ڈیٹا Firebase سے ہمیشہ کے لیے ڈیلیٹ کر دیں؟")) {
+            if (confirm("⚠️ WARNING: Delete ALL employee records permanently from Firebase?")) {
                 try {
                     const snapshot = await getDocs(empCollection);
                     const batch = writeBatch(db);
                     snapshot.forEach(docSnap => batch.delete(docSnap.ref));
                     await batch.commit();
-                    alert("تمام ڈیٹا صاف کر دیا گیا!");
+                    alert("All data cleared successfully!");
                 } catch(e) {
-                    alert("خطا: " + e.message);
+                    alert("Error: " + e.message);
                 }
             }
         };
@@ -424,7 +493,7 @@
                 const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                 const excelData = XLSX.utils.sheet_to_json(worksheet);
 
-                if (excelData.length === 0) return alert("ایکسل شیٹ خالی ہے!");
+                if (excelData.length === 0) return alert("Excel sheet is empty!");
 
                 for (let row of excelData) {
                     const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
@@ -449,7 +518,7 @@
                     };
                     await addDoc(empCollection, newEmp);
                 }
-                alert(`✅ ${excelData.length} ملازمین Firebase پر شامل ہو گئے!`);
+                alert(`✅ ${excelData.length} Employees imported successfully to Firebase!`);
             };
             reader.readAsArrayBuffer(file);
         };
@@ -478,7 +547,7 @@
                 window.userRole = 'viewer'; 
             } 
             else { 
-                return alert("غلط یوزر نیم یا پاس ورڈ!"); 
+                return alert("Invalid Username or Password!"); 
             }
 
             localStorage.setItem('al_majmaah_logged', 'true');
@@ -496,7 +565,6 @@
             document.getElementById('app-container').style.display = 'block';
             document.getElementById('user-role-badge').innerText = window.userRole.toUpperCase();
 
-            // اگر صارف admin نہیں ہے تو تمام admin-only عناصر چھپا دیے جائیں گے
             if (window.userRole !== 'admin') {
                 document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
             }
@@ -571,7 +639,7 @@
                 heading.style.color = "#e11d48";
             } else {
                 cardBox.style.background = 'var(--card-bg)';
-                heading.innerText = "📋 Employee Directory & Attachments";
+                heading.innerText = "📋 Employee Directory";
                 heading.style.color = "#0f172a";
             }
             renderData();
@@ -595,26 +663,16 @@
 
                 if (showOnlyExpired && !hasAlert) return;
 
-                let docsHtml = '';
-                if(emp.iqamaPic) docsHtml += `<span class="doc-link" onclick="openImagePopup('${emp.iqamaPic}', 'Iqama')">📄 Iqama</span>`;
-                if(emp.passportPic) docsHtml += `<span class="doc-link" onclick="openImagePopup('${emp.passportPic}', 'Passport')">📄 Passport</span>`;
-                if(emp.scfhsPic) docsHtml += `<span class="doc-link" onclick="openImagePopup('${emp.scfhsPic}', 'SCFHS')">📄 SCFHS</span>`;
-                if(emp.baladiyaPic) docsHtml += `<span class="doc-link" onclick="openImagePopup('${emp.baladiyaPic}', 'Baladiya')">📄 Baladiya</span>`;
-                if(!docsHtml) docsHtml = '<span style="color:#94a3b8; font-size:11px;">No Docs</span>';
-
                 tbody.innerHTML += `
                     <tr>
                         <td><img src="${emp.photo}" class="emp-thumb"></td>
                         <td style="font-weight: 800; color: #0284c7;">${emp.id}</td>
-                        <td><b>${emp.name}</b><br><span style="font-size: 11px; color: #64748b;">${emp.mobile}</span></td>
-                        <td><b>${emp.designation}</b><br><span style="font-size: 11px; color: #64748b;">${emp.nationality}</span></td>
-                        <td>${emp.iqama}<br><span class="badge ${iqamaStatus.class}">${iqamaStatus.badge}</span></td>
-                        <td>${emp.passport}<br><span class="badge ${passportStatus.class}">${passportStatus.badge}</span></td>
-                        <td>${emp.scfhsExp ? `<span class="badge ${scfhsStatus.class}">${scfhsStatus.badge}</span>` : '-'}</td>
-                        <td>${docsHtml}</td>
-                        <td style="color: #059669; font-weight: 800;">${emp.salary} SAR<br><span style="font-size: 11px; color: #64748b; font-weight: normal;">${emp.bank}</span></td>
-                        <td style="font-size: 12px; font-weight: 500;">${emp.emergency}</td>
+                        <td><b>${emp.name}</b></td>
+                        <td><b>${emp.designation}</b></td>
+                        <td>${emp.project}</td>
+                        <td>${emp.mobile}</td>
                         <td>
+                            <button onclick="openDetailModal('${emp.firestoreId}')" class="btn-sm btn-view">👁️ View Details</button>
                             <button onclick="openIDCard(${index})" class="btn-sm btn-card">🪪 Card</button>
                             <button onclick="sendWhatsApp('${emp.mobile}', '${emp.iqamaExp}')" class="btn-sm btn-wa">💬 WA</button>
                             ${window.userRole === 'admin' ? `
@@ -631,6 +689,59 @@
             document.getElementById('total-salary').innerText = totalSalary.toLocaleString() + ' SAR';
 
             filterEmployees();
+        }
+
+        /* --- POPUP MODAL FUNCTIONALITY --- */
+        function openDetailModal(firestoreId) {
+            const emp = window.employees.find(e => e.firestoreId === firestoreId);
+            if(!emp) return;
+
+            const iqamaStatus = checkExpiryStatus(emp.iqamaExp);
+            const passportStatus = checkExpiryStatus(emp.passportExp);
+            const scfhsStatus = checkExpiryStatus(emp.scfhsExp);
+
+            document.getElementById('pop-photo').src = emp.photo;
+            document.getElementById('pop-name').innerText = emp.name;
+            document.getElementById('pop-desig').innerText = emp.designation;
+            document.getElementById('pop-id').innerText = "ID: " + emp.id;
+
+            document.getElementById('pop-nat').innerText = emp.nationality || 'N/A';
+            document.getElementById('pop-project').innerText = emp.project || 'N/A';
+            document.getElementById('pop-mobile').innerText = emp.mobile || 'N/A';
+            document.getElementById('pop-salary').innerText = `${emp.salary || 0} SAR (${emp.bank || 'N/A'})`;
+
+            document.getElementById('pop-iqama').innerHTML = `${emp.iqama || 'N/A'}<br><span class="badge ${iqamaStatus.class}">Exp: ${iqamaStatus.badge}</span>`;
+            document.getElementById('pop-passport').innerHTML = `${emp.passport || 'N/A'}<br><span class="badge ${passportStatus.class}">Exp: ${passportStatus.badge}</span>`;
+            document.getElementById('pop-scfhs').innerHTML = emp.scfhsExp ? `<span class="badge ${scfhsStatus.class}">Exp: ${scfhsStatus.badge}</span>` : 'N/A';
+            document.getElementById('pop-emergency').innerText = emp.emergency || 'N/A';
+
+            let docsHtml = '';
+            if(emp.iqamaPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'iqamaPic', 'Iqama Document')">📄 Iqama Scan</button>`;
+            if(emp.passportPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'passportPic', 'Passport Document')">📄 Passport Scan</button>`;
+            if(emp.scfhsPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'scfhsPic', 'SCFHS Document')">📄 SCFHS Card</button>`;
+            if(emp.baladiyaPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'baladiyaPic', 'Baladiya Document')">📄 Baladiya Card</button>`;
+            if(!docsHtml) docsHtml = '<span style="color:#94a3b8; font-size:12px;">No documents attached</span>';
+
+            document.getElementById('pop-docs').innerHTML = docsHtml;
+            document.getElementById('detail-modal').style.display = 'flex';
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').style.display = 'none';
+        }
+
+        /* --- IN-APP DOCUMENT VIEWER --- */
+        function openDocViewer(firestoreId, fieldKey, title) {
+            const emp = window.employees.find(e => e.firestoreId === firestoreId);
+            if (!emp || !emp[fieldKey]) return alert(title + ' scan not attached!');
+
+            document.getElementById('doc-title').innerText = title + ' - ' + emp.name;
+            document.getElementById('doc-img-target').src = emp[fieldKey];
+            document.getElementById('doc-viewer-modal').style.display = 'flex';
+        }
+
+        function closeDocViewer() {
+            document.getElementById('doc-viewer-modal').style.display = 'none';
         }
 
         function editEmployee(firestoreId) {
@@ -663,14 +774,8 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function openImagePopup(dataUrl, title) {
-            if(!dataUrl) return alert(title + ' not attached!');
-            const win = window.open();
-            win.document.write(`<iframe src="${dataUrl}" frameborder="0" style="border:0; top:0; left:0; bottom:0; right:0; width:100%; height:100%;" allowfullscreen></iframe>`);
-        }
-
         function sendWhatsApp(mobile, expiry) {
-            const msg = `السلام عليكم، آپ کے اقامے/پاسپورٹ کی تاریخ (${expiry}) قریب ہے۔ براہ کرم تجدید کے لیے ایچ آر سے رابطہ کریں۔`;
+            const msg = `Assalamu Alaikum, Your Iqama/Passport expiry date (${expiry}) is near. Please contact HR for renewal.`;
             window.open(`https://wa.me/${mobile}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
@@ -689,6 +794,16 @@
         }
 
         function closeModal() { document.getElementById('id-card-modal').style.display = 'none'; }
+
+        /* Window outside click to close modals */
+        window.onclick = function(event) {
+            const detailModal = document.getElementById('detail-modal');
+            const idModal = document.getElementById('id-card-modal');
+            const docViewerModal = document.getElementById('doc-viewer-modal');
+            if (event.target === detailModal) detailModal.style.display = 'none';
+            if (event.target === idModal) idModal.style.display = 'none';
+            if (event.target === docViewerModal) docViewerModal.style.display = 'none';
+        }
 
         function filterEmployees() {
             const q = document.getElementById('search-input').value.toLowerCase().trim();
