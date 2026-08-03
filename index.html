@@ -54,12 +54,11 @@
         .header-brand img { width: 55px; height: 55px; border-radius: 14px; object-fit: cover; border: 2px solid #0ea5e9; }
         .customization-panel { background: rgba(255,255,255,0.7); padding: 8px 12px; border-radius: 12px; border: 1px solid #bae6fd; font-size: 11px; font-weight: 600; color: #0369a1; display: flex; gap: 8px; align-items: center; }
         
-        /* Stats Grid updated */
         .stats-grid { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
         .stat-card { background: var(--card-bg); padding: 18px 22px; border-radius: 20px; border: 1px solid var(--glass-border); flex: 1; min-width: 220px; transition: all 0.2s ease; }
         .stat-card-clickable { cursor: pointer; }
         .stat-card-clickable:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(225, 29, 72, 0.15); }
-        .stat-card-small { flex: 0.6; min-width: 160px; padding: 12px 16px; } /* Small Tab for Salary */
+        .stat-card-small { flex: 0.6; min-width: 160px; padding: 12px 16px; }
         .stat-card h3 { font-size: 24px; font-weight: 900; }
         .stat-card-small h3 { font-size: 18px; font-weight: 800; }
         
@@ -86,7 +85,6 @@
         .id-card-info { font-size: 12px; text-align: left; line-height: 1.8; margin-bottom: 15px; }
         #qrcode { display: flex; justify-content: center; margin-top: 10px; }
 
-        /* Footer Style */
         .footer-credits {
             text-align: center; margin-top: 30px; padding: 15px;
             background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(10px);
@@ -123,12 +121,13 @@
                 </div>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                <div class="customization-panel">
+                <!-- background اور logo تبدیلی والے اپشنز پر بھی admin-only کلاس لگا دی گئی ہے -->
+                <div class="customization-panel admin-only">
                     <span>🖼️ BG:</span>
                     <input type="file" accept="image/*" onchange="uploadCustomBackground(event)" style="display:none;" id="bg-input">
                     <label for="bg-input" style="color: #0284c7; cursor: pointer; text-decoration: underline;">Change</label>
                 </div>
-                <div class="customization-panel">
+                <div class="customization-panel admin-only">
                     <span>🏢 Logo:</span>
                     <input type="file" accept="image/*" onchange="uploadSystemLogo(event)" style="display:none;" id="header-logo-input">
                     <label for="header-logo-input" style="color: #0284c7; cursor: pointer; text-decoration: underline;">Change</label>
@@ -144,20 +143,18 @@
             </div>
         </header>
 
-        <!-- Stats Grid (Updated Layout) -->
+        <!-- Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card" onclick="filterEmployees('all')" style="cursor: pointer;">
                 <p style="font-size: 11px; color: #64748b; font-weight: 700;">TOTAL WORKFORCE</p>
                 <h3 id="total-employees" style="color: #0284c7;">0</h3>
             </div>
             
-            <!-- Clickable Alert Card -->
             <div class="stat-card stat-card-clickable" onclick="toggleExpiredFilter()" id="alert-card-box">
                 <p style="font-size: 11px; color: #e11d48; font-weight: 800;">DOCUMENT ALERTS 🔍 (Click to Filter)</p>
                 <h3 id="expiring-count" style="color: #e11d48;">0</h3>
             </div>
 
-            <!-- Smaller Monthly Salary Card -->
             <div class="stat-card stat-card-small">
                 <p style="font-size: 10px; color: #64748b; font-weight: 700;">SALARY BUDGET</p>
                 <h3 id="total-salary" style="color: #059669;">0 SAR</h3>
@@ -308,7 +305,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Firebase Config Keys
         const firebaseConfig = {
           apiKey: "AIzaSyC33ueoEDhQ-5vGw56KqBWXb1T6TUqBOzc",
           authDomain: "al-majmaa-hr.firebaseapp.com",
@@ -327,7 +323,6 @@
         window.userRole = 'viewer';
         window.currentFiles = { photo: "", iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "" };
 
-        // Realtime Firebase Listener across all devices
         onSnapshot(empCollection, (snapshot) => {
             window.employees = [];
             snapshot.forEach(docSnap => {
@@ -338,7 +333,6 @@
             console.error("Firebase Sync Error: ", error);
         });
 
-        // Add/Update Record
         document.getElementById('employee-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const editDocId = document.getElementById('edit-doc-id').value;
@@ -395,7 +389,6 @@
             }
         });
 
-        // Delete Employee
         window.deleteEmployee = async function(firestoreId) {
             if (confirm("کیا آپ اس ملازم کا ڈیٹا Firebase سے ڈیلیٹ کرنا چاہتے ہیں؟")) {
                 try {
@@ -406,7 +399,6 @@
             }
         };
 
-        // Reset All Data
         window.clearAllData = async function() {
             if (confirm("⚠️ تمام ڈیٹا Firebase سے ہمیشہ کے لیے ڈیلیٹ کر دیں؟")) {
                 try {
@@ -421,7 +413,6 @@
             }
         };
 
-        // Import Excel to Firebase
         window.importFromExcel = function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -505,6 +496,7 @@
             document.getElementById('app-container').style.display = 'block';
             document.getElementById('user-role-badge').innerText = window.userRole.toUpperCase();
 
+            // اگر صارف admin نہیں ہے تو تمام admin-only عناصر چھپا دیے جائیں گے
             if (window.userRole !== 'admin') {
                 document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
             }
@@ -568,7 +560,6 @@
             };
         }
 
-        // Toggle Alert Filter Function
         function toggleExpiredFilter() {
             showOnlyExpired = !showOnlyExpired;
             const cardBox = document.getElementById('alert-card-box');
@@ -602,7 +593,6 @@
                 if (hasAlert) expiringAlerts++;
                 totalSalary += (emp.salary || 0);
 
-                // Skip rendering if alert filter is ON and employee has no alert
                 if (showOnlyExpired && !hasAlert) return;
 
                 let docsHtml = '';
