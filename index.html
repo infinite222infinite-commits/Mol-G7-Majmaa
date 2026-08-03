@@ -88,7 +88,7 @@
         <div class="login-card">
             <img id="login-logo-preview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="logo-preview" alt="Logo">
             <h2 style="color: #0369a1; font-size: 20px;">🏢 HR Portal Login</h2>
-            <p style="font-size: 12px; color: #64748b; margin-bottom: 15px;">Admin: admin/admin123 | Viewer: user/user123</p>
+            <p style="font-size: 12px; color: #64748b; margin-bottom: 15px;">Admin: admin/Almajmaa123 | Viewer: user/user123</p>
             <form id="login-form" onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 12px;" autocomplete="off">
                 <input type="text" id="login-user" placeholder="Username" required autocomplete="off">
                 <input type="password" id="login-pass" placeholder="Password" required autocomplete="new-password">
@@ -149,7 +149,7 @@
         <div class="card-box admin-only">
             <h2 id="form-title" style="font-size: 16px; margin-bottom: 15px;">✨ Add New Employee Profile & Documents</h2>
             <form id="employee-form" class="form-grid" autocomplete="off">
-                <input type="hidden" id="edit-index" value="-1">
+                <input type="hidden" id="edit-doc-id" value="">
 
                 <div class="field-group"><label>Employee Photo</label><input type="file" id="photo" accept="image/*" onchange="handleFileRead(event, 'photo')"></div>
                 <div class="field-group"><label>Employee ID</label><input type="text" id="empId" placeholder="EMP-101" required autocomplete="off"></div>
@@ -218,7 +218,7 @@
                 <div class="field-group"><label>Bank Name</label><input type="text" id="bank" placeholder="Bank Name" required autocomplete="off"></div>
                 <div class="field-group"><label>Emergency Contact</label><input type="text" id="emergency" placeholder="Name & Mobile" required autocomplete="off"></div>
 
-                <button type="submit" id="save-btn" class="btn-stylish btn-success" style="grid-column: 1 / -1; margin-top: 10px;">💾 Save Employee Record & Documents</button>
+                <button type="submit" id="save-btn" class="btn-stylish btn-success" style="grid-column: 1 / -1; margin-top: 10px;">💾 Save Employee Record to Firebase</button>
             </form>
         </div>
 
@@ -274,15 +274,170 @@
         </div>
     </div>
 
-    <script>
-        let employees = JSON.parse(localStorage.getItem('al_majmaah_employees_db')) || [];
-        let userRole = 'viewer';
-        let currentFiles = { photo: "", iqamaPic: "", scfhsPic: "", baladiyaPic: "" };
+    <!-- Firebase SDK Modular -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // 🔥 Replace this with your actual Firebase project config from Firebase Console
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const empCollection = collection(db, "employees");
+
+        window.employees = [];
+        window.userRole = 'viewer';
+        window.currentFiles = { photo: "", iqamaPic: "", scfhsPic: "", baladiyaPic: "" };
+
+        // Firebase Realtime Listener
+        onSnapshot(empCollection, (snapshot) => {
+            window.employees = [];
+            snapshot.forEach(docSnap => {
+                window.employees.push({ firestoreId: docSnap.id, ...docSnap.data() });
+            });
+            renderData();
+        }, (error) => {
+            console.error("Firebase Error: ", error);
+        });
+
+        // Add/Update Record
+        document.getElementById('employee-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const editDocId = document.getElementById('edit-doc-id').value;
+            const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+
+            let finalNationality = document.getElementById('nationality').value;
+            if (finalNationality === 'Other') finalNationality = document.getElementById('customNationality').value || 'Other';
+
+            let finalDesignation = document.getElementById('designation').value;
+            if (finalDesignation === 'Other') finalDesignation = document.getElementById('customDesignation').value || 'Other';
+
+            let existingEmp = window.employees.find(e => e.firestoreId === editDocId) || {};
+
+            const newEmp = {
+                photo: window.currentFiles.photo || existingEmp.photo || defaultAvatar,
+                iqamaPic: window.currentFiles.iqamaPic || existingEmp.iqamaPic || "",
+                scfhsPic: window.currentFiles.scfhsPic || existingEmp.scfhsPic || "",
+                baladiyaPic: window.currentFiles.baladiyaPic || existingEmp.baladiyaPic || "",
+                id: document.getElementById('empId').value,
+                name: document.getElementById('empName').value,
+                nationality: finalNationality,
+                designation: finalDesignation,
+                project: document.getElementById('project').value,
+                mobile: document.getElementById('mobile').value,
+                iqama: document.getElementById('iqama').value,
+                iqamaExp: document.getElementById('iqamaExpiry').value,
+                passport: document.getElementById('passport').value,
+                passportExp: document.getElementById('passportExpiry').value,
+                scfhsExp: document.getElementById('scfhsExpiry').value || '',
+                salary: parseFloat(document.getElementById('salary').value) || 0,
+                bank: document.getElementById('bank').value,
+                emergency: document.getElementById('emergency').value
+            };
+
+            try {
+                if (editDocId) {
+                    await updateDoc(doc(db, "employees", editDocId), newEmp);
+                    alert("✅ ملازم کا ڈیٹا Firebase پر اپڈیٹ ہو گیا!");
+                } else {
+                    await addDoc(empCollection, newEmp);
+                    alert("✅ نیا ملازم Firebase پر محفوظ ہو گیا!");
+                }
+                this.reset();
+                window.currentFiles = { photo: "", iqamaPic: "", scfhsPic: "", baladiyaPic: "" };
+                document.getElementById('edit-doc-id').value = "";
+                document.getElementById('form-title').innerText = "✨ Add New Employee Profile & Documents";
+                document.getElementById('scfhs-box').classList.add('hidden');
+                document.getElementById('scfhs-pic-box').classList.add('hidden');
+                document.getElementById('custom-desig-box').classList.add('hidden');
+                document.getElementById('custom-nationality-box').classList.add('hidden');
+            } catch (err) {
+                alert("❌ ڈیٹا سیو کرنے میں مسئلہ آیا: " + err.message);
+            }
+        });
+
+        // Delete Employee
+        window.deleteEmployee = async function(firestoreId) {
+            if (confirm("کیا آپ اس ملازم کا ڈیٹا Firebase سے ڈیلیٹ کرنا چاہتے ہیں؟")) {
+                try {
+                    await deleteDoc(doc(db, "employees", firestoreId));
+                } catch (e) {
+                    alert("خطا: " + e.message);
+                }
+            }
+        };
+
+        // Reset All Data
+        window.clearAllData = async function() {
+            if (confirm("⚠️ تمام ڈیٹا Firebase سے ہمیشہ کے لیے ڈیلیٹ کر دیں؟")) {
+                try {
+                    const snapshot = await getDocs(empCollection);
+                    const batch = writeBatch(db);
+                    snapshot.forEach(docSnap => batch.delete(docSnap.ref));
+                    await batch.commit();
+                    alert("تمام ڈیٹا صاف کر دیا گیا!");
+                } catch(e) {
+                    alert("خطا: " + e.message);
+                }
+            }
+        };
+
+        // Import Excel to Firebase
+        window.importFromExcel = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const excelData = XLSX.utils.sheet_to_json(worksheet);
+
+                if (excelData.length === 0) return alert("ایکسل شیٹ خالی ہے!");
+
+                for (let row of excelData) {
+                    const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+                    const id = String(row["ID"] || row["Emp ID"] || `EMP-${Math.floor(Math.random()*1000)}`);
+
+                    const newEmp = {
+                        photo: defaultAvatar, iqamaPic: "", scfhsPic: "", baladiyaPic: "",
+                        id: id,
+                        name: row["Name"] || row["Full Name"] || "N/A",
+                        nationality: row["Nationality"] || "Other",
+                        designation: row["Designation"] || "Other",
+                        project: row["Project"] || "Al Majmaah Main Site",
+                        mobile: String(row["Mobile"] || row["Mobile Number"] || ""),
+                        iqama: String(row["Iqama"] || row["Iqama Number"] || ""),
+                        iqamaExp: row["Iqama Expiry"] || row["IqamaExp"] || "",
+                        passport: String(row["Passport"] || row["Passport Number"] || ""),
+                        passportExp: row["Passport Expiry"] || row["PassportExp"] || "",
+                        scfhsExp: row["SCFHS Expiry"] || row["SCFHS"] || "",
+                        salary: parseFloat(row["Salary"]) || 0,
+                        bank: row["Bank"] || row["Bank Name"] || "N/A",
+                        emergency: row["Emergency"] || row["Emergency Contact"] || "N/A"
+                    };
+                    await addDoc(empCollection, newEmp);
+                }
+                alert(`✅ ${excelData.length} ملازمین Firebase پر شامل ہو گئے!`);
+            };
+            reader.readAsArrayBuffer(file);
+        };
+    </script>
+
+    <script>
         window.onload = function() {
             loadSavedCustomizations();
             if(localStorage.getItem('al_majmaah_logged') === 'true') {
-                userRole = localStorage.getItem('al_majmaah_role') || 'viewer';
+                window.userRole = localStorage.getItem('al_majmaah_role') || 'viewer';
                 showDashboard();
             }
         };
@@ -292,12 +447,19 @@
             const u = document.getElementById('login-user').value.trim();
             const p = document.getElementById('login-pass').value.trim();
 
-            if (u === 'admin' && p === 'admin123') { userRole = 'admin'; } 
-            else if (u === 'user' && p === 'user123') { userRole = 'viewer'; } 
-            else { return alert("غلط یوزر نیم یا پاس ورڈ!"); }
+            // 🔒 نیا پاس ورڈ: Almajmaa123
+            if (u === 'admin' && p === 'Almajmaa123') { 
+                window.userRole = 'admin'; 
+            } 
+            else if (u === 'user' && p === 'user123') { 
+                window.userRole = 'viewer'; 
+            } 
+            else { 
+                return alert("غلط یوزر نیم یا پاس ورڈ!"); 
+            }
 
             localStorage.setItem('al_majmaah_logged', 'true');
-            localStorage.setItem('al_majmaah_role', userRole);
+            localStorage.setItem('al_majmaah_role', window.userRole);
             showDashboard();
         }
 
@@ -309,17 +471,12 @@
         function showDashboard() {
             document.getElementById('login-container').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
-            document.getElementById('user-role-badge').innerText = userRole.toUpperCase();
+            document.getElementById('user-role-badge').innerText = window.userRole.toUpperCase();
 
-            if (userRole !== 'admin') {
+            if (window.userRole !== 'admin') {
                 document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
             }
 
-            renderData();
-        }
-
-        function saveToStorage() {
-            localStorage.setItem('al_majmaah_employees_db', JSON.stringify(employees));
             renderData();
         }
 
@@ -327,7 +484,7 @@
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (e) => currentFiles[key] = e.target.result;
+                reader.onload = (e) => window.currentFiles[key] = e.target.result;
                 reader.readAsDataURL(file);
             }
         }
@@ -357,56 +514,6 @@
             else customBox.classList.add('hidden');
         }
 
-        document.getElementById('employee-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const editIdx = parseInt(document.getElementById('edit-index').value);
-            const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
-
-            let finalNationality = document.getElementById('nationality').value;
-            if (finalNationality === 'Other') finalNationality = document.getElementById('customNationality').value || 'Other';
-
-            let finalDesignation = document.getElementById('designation').value;
-            if (finalDesignation === 'Other') finalDesignation = document.getElementById('customDesignation').value || 'Other';
-
-            const newEmp = {
-                photo: currentFiles.photo || (editIdx >= 0 ? employees[editIdx].photo : defaultAvatar),
-                iqamaPic: currentFiles.iqamaPic || (editIdx >= 0 ? employees[editIdx].iqamaPic : ""),
-                scfhsPic: currentFiles.scfhsPic || (editIdx >= 0 ? employees[editIdx].scfhsPic : ""),
-                baladiyaPic: currentFiles.baladiyaPic || (editIdx >= 0 ? employees[editIdx].baladiyaPic : ""),
-                id: document.getElementById('empId').value,
-                name: document.getElementById('empName').value,
-                nationality: finalNationality,
-                designation: finalDesignation,
-                project: document.getElementById('project').value,
-                mobile: document.getElementById('mobile').value,
-                iqama: document.getElementById('iqama').value,
-                iqamaExp: document.getElementById('iqamaExpiry').value,
-                passport: document.getElementById('passport').value,
-                passportExp: document.getElementById('passportExpiry').value,
-                scfhsExp: document.getElementById('scfhsExpiry').value || '',
-                salary: parseFloat(document.getElementById('salary').value) || 0,
-                bank: document.getElementById('bank').value,
-                emergency: document.getElementById('emergency').value
-            };
-
-            if (editIdx >= 0) {
-                employees[editIdx] = newEmp;
-            } else {
-                employees.push(newEmp);
-            }
-
-            saveToStorage();
-            this.reset();
-            currentFiles = { photo: "", iqamaPic: "", scfhsPic: "", baladiyaPic: "" };
-            document.getElementById('edit-index').value = "-1";
-            document.getElementById('form-title').innerText = "✨ Add New Employee Profile & Documents";
-            document.getElementById('scfhs-box').classList.add('hidden');
-            document.getElementById('scfhs-pic-box').classList.add('hidden');
-            document.getElementById('custom-desig-box').classList.add('hidden');
-            document.getElementById('custom-nationality-box').classList.add('hidden');
-            alert("✅ ملازم کا ڈیٹا کامیابی سے محفوظ ہو گیا ہے!");
-        });
-
         function checkExpiryStatus(dateStr) {
             if (!dateStr) return { badge: 'N/A', class: '' };
             const diff = Math.ceil((new Date(dateStr) - new Date()) / (1000 * 60 * 60 * 24));
@@ -415,10 +522,11 @@
 
         function renderData() {
             const tbody = document.getElementById('employee-table-body');
+            if(!tbody) return;
             tbody.innerHTML = '';
             let expiringAlerts = 0, totalSalary = 0;
 
-            employees.forEach((emp, index) => {
+            (window.employees || []).forEach((emp, index) => {
                 const iqamaStatus = checkExpiryStatus(emp.iqamaExp);
                 const passportStatus = checkExpiryStatus(emp.passportExp);
                 const scfhsStatus = checkExpiryStatus(emp.scfhsExp);
@@ -449,23 +557,25 @@
                         <td>
                             <button onclick="openIDCard(${index})" class="btn-sm btn-card">🪪 Card</button>
                             <button onclick="sendWhatsApp('${emp.mobile}', '${emp.iqamaExp}')" class="btn-sm btn-wa">💬 WA</button>
-                            ${userRole === 'admin' ? `
-                                <button onclick="editEmployee(${index})" class="btn-sm btn-edit">✏️</button>
-                                <button onclick="deleteEmployee(${index})" class="btn-sm btn-del">🗑️</button>
+                            ${window.userRole === 'admin' ? `
+                                <button onclick="editEmployee('${emp.firestoreId}')" class="btn-sm btn-edit">✏️</button>
+                                <button onclick="deleteEmployee('${emp.firestoreId}')" class="btn-sm btn-del">🗑️</button>
                             ` : ''}
                         </td>
                     </tr>
                 `;
             });
 
-            document.getElementById('total-employees').innerText = employees.length;
+            document.getElementById('total-employees').innerText = (window.employees || []).length;
             document.getElementById('expiring-count').innerText = expiringAlerts;
             document.getElementById('total-salary').innerText = totalSalary.toLocaleString() + ' SAR';
         }
 
-        function editEmployee(index) {
-            const emp = employees[index];
-            document.getElementById('edit-index').value = index;
+        function editEmployee(firestoreId) {
+            const emp = window.employees.find(e => e.firestoreId === firestoreId);
+            if(!emp) return;
+
+            document.getElementById('edit-doc-id').value = firestoreId;
             document.getElementById('empId').value = emp.id;
             document.getElementById('empName').value = emp.name;
             document.getElementById('project').value = emp.project;
@@ -503,7 +613,7 @@
         }
 
         function openIDCard(index) {
-            const emp = employees[index];
+            const emp = window.employees[index];
             document.getElementById('card-photo').src = emp.photo;
             document.getElementById('card-name').innerText = emp.name;
             document.getElementById('card-desig').innerText = emp.designation;
@@ -517,20 +627,6 @@
         }
 
         function closeModal() { document.getElementById('id-card-modal').style.display = 'none'; }
-
-        function deleteEmployee(index) {
-            if (confirm("کیا آپ اس ملازم کا ڈیٹا ڈیلیٹ کرنا چاہتے ہیں؟")) {
-                employees.splice(index, 1);
-                saveToStorage();
-            }
-        }
-
-        function clearAllData() {
-            if (confirm("⚠️ تمام ڈیٹا ڈیلیٹ کر دیں؟")) {
-                employees = [];
-                saveToStorage();
-            }
-        }
 
         function filterEmployees() {
             const q = document.getElementById('search-input').value.toLowerCase().trim();
@@ -578,55 +674,12 @@
         }
 
         function exportToCSV() {
-            if(employees.length === 0) return alert('No records to export!');
+            if(!window.employees || window.employees.length === 0) return alert('No records to export!');
             let csv = 'ID,Name,Nationality,Designation,Project,Mobile,Iqama,Iqama Expiry,Passport,Passport Expiry,SCFHS Expiry,Salary,Bank,Emergency Contact\n';
-            employees.forEach(e => {
+            window.employees.forEach(e => {
                 csv += `"${e.id}","${e.name}","${e.nationality}","${e.designation}","${e.project}","${e.mobile}","${e.iqama}","${e.iqamaExp}","${e.passport}","${e.passportExp}","${e.scfhsExp}","${e.salary}","${e.bank}","${e.emergency}"\n`;
             });
             const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'Al_Majmaah_Employees.csv'; a.click();
-        }
-
-        function importFromExcel(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                const excelData = XLSX.utils.sheet_to_json(worksheet);
-
-                if (excelData.length === 0) return alert("ایکسل شیٹ خالی ہے!");
-
-                excelData.forEach(row => {
-                    const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
-                    const id = String(row["ID"] || row["Emp ID"] || `EMP-${Math.floor(Math.random()*1000)}`);
-
-                    const newEmp = {
-                        photo: defaultAvatar, iqamaPic: "", scfhsPic: "", baladiyaPic: "",
-                        id: id,
-                        name: row["Name"] || row["Full Name"] || "N/A",
-                        nationality: row["Nationality"] || "Other",
-                        designation: row["Designation"] || "Other",
-                        project: row["Project"] || "Al Majmaah Main Site",
-                        mobile: String(row["Mobile"] || row["Mobile Number"] || ""),
-                        iqama: String(row["Iqama"] || row["Iqama Number"] || ""),
-                        iqamaExp: row["Iqama Expiry"] || row["IqamaExp"] || "",
-                        passport: String(row["Passport"] || row["Passport Number"] || ""),
-                        passportExp: row["Passport Expiry"] || row["PassportExp"] || "",
-                        scfhsExp: row["SCFHS Expiry"] || row["SCFHS"] || "",
-                        salary: parseFloat(row["Salary"]) || 0,
-                        bank: row["Bank"] || row["Bank Name"] || "N/A",
-                        emergency: row["Emergency"] || row["Emergency Contact"] || "N/A"
-                    };
-
-                    employees.push(newEmp);
-                });
-                saveToStorage();
-                alert(`✅ ${excelData.length} ملازمین کا ڈیٹا ایکسل سے کامیابی سے شامل ہو گیا ہے!`);
-            };
-            reader.readAsArrayBuffer(file);
         }
     </script>
 </body>
