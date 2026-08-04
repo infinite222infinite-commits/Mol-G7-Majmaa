@@ -90,7 +90,6 @@
             background: #ecfdf5 !important;
         }
 
-        /* Custom Date Container */
         .date-input-wrap { position: relative; display: flex; align-items: center; }
         .date-input-wrap input[type="text"] { padding-right: 35px; }
         .date-picker-trigger { position: absolute; right: 10px; cursor: pointer; font-size: 16px; opacity: 0.7; }
@@ -108,6 +107,9 @@
         .badge-red { background: #fee2e2; color: #991b1b; }
         .badge-blue { background: #e0f2fe; color: #0369a1; }
         .hidden { display: none !important; }
+
+        .desig-row-clickable { cursor: pointer; transition: background 0.2s ease; }
+        .desig-row-clickable:hover { background: #e0f2fe !important; }
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(6px); justify-content: center; align-items: center; padding: 15px; }
         .id-card-wrap { background: #fff; width: 100%; max-width: 340px; border-radius: 18px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; border: 2px solid #0ea5e9; position: relative; }
@@ -169,7 +171,7 @@
 </head>
 <body id="main-body">
 
-    <!-- 1. Login Container -->
+    <!-- Login Container -->
     <div id="login-container">
         <div class="login-card">
             <img id="login-logo-preview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="logo-preview" alt="Logo">
@@ -182,7 +184,7 @@
         </div>
     </div>
 
-    <!-- 2. Main Dashboard -->
+    <!-- Main Dashboard -->
     <div id="app-container">
         <header>
             <div class="header-brand">
@@ -207,7 +209,7 @@
                 <div class="customization-panel admin-only">
                     <span>📂 Excel:</span>
                     <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" onchange="importFromExcel(event)" style="display:none;">
-                    <label for="excel-file-input" style="color: #0284c7; cursor: pointer; text-decoration: underline;">Import</label>
+                    <label for="excel-file-input" style="color: #0284c7; cursor: pointer; text-decoration: underline;">Import / Sync</label>
                 </div>
                 <button onclick="exportToCSV()" class="btn-stylish btn-success">📥 CSV Export</button>
                 <button id="admin-reset-btn" onclick="clearAllData()" class="btn-stylish btn-danger admin-only">🗑️ Reset</button>
@@ -217,8 +219,8 @@
 
         <!-- Stats Grid -->
         <div class="stats-grid">
-            <div class="stat-card" onclick="filterEmployees('all')" style="cursor: pointer;">
-                <p style="font-size: 11px; color: #64748b; font-weight: 700;">TOTAL WORKFORCE</p>
+            <div class="stat-card" onclick="resetSearchFilter()" style="cursor: pointer;">
+                <p style="font-size: 11px; color: #64748b; font-weight: 700;">TOTAL WORKFORCE (Show All)</p>
                 <h3 id="total-employees" style="color: #0284c7;">0</h3>
             </div>
             
@@ -242,7 +244,6 @@
             <form id="employee-form" class="form-grid" autocomplete="off">
                 <input type="hidden" id="edit-doc-id" value="">
 
-                <!-- Standard Profile Info -->
                 <div class="field-group"><label>Employee Photo (Drag / Paste)</label><input type="file" id="photo" accept="image/*" onchange="handleFileRead(event, 'photo')" data-key="photo"></div>
                 <div class="field-group"><label>Employee ID *</label><input type="text" id="empId" placeholder="EMP-101" required autocomplete="off"></div>
                 <div class="field-group"><label>Full Name *</label><input type="text" id="empName" placeholder="Full Name" required autocomplete="off"></div>
@@ -337,7 +338,6 @@
                 <div class="field-group"><label>Bank Name</label><input type="text" id="bank" placeholder="Bank Name" autocomplete="off"></div>
                 <div class="field-group"><label>Emergency Contact</label><input type="text" id="emergency" placeholder="Name & Mobile" autocomplete="off"></div>
 
-                <!-- BOTTOM OPTIONS -->
                 <div class="field-group" style="border-top: 1px dashed #0ea5e9; padding-top: 10px; margin-top: 5px;">
                     <label style="color: #0284c7;">Start Working Date</label>
                     <div class="date-input-wrap">
@@ -367,7 +367,10 @@
         <div class="card-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="font-size: 16px;" id="table-heading">📋 Employee Directory</h2>
-                <input type="text" id="search-input" onkeyup="filterEmployees()" placeholder="🔍 Search ID, Iqama, Passport or Name..." style="max-width: 300px;">
+                <div style="display: flex; gap: 8px; align-items: center; width: 100%; max-width: 320px;">
+                    <input type="text" id="search-input" onkeyup="filterEmployees()" placeholder="🔍 Search ID, Designation, Name..." style="flex: 1;">
+                    <button onclick="resetSearchFilter()" class="btn-stylish" style="padding: 8px 12px; font-size: 11px; background: #64748b;">Reset</button>
+                </div>
             </div>
             <div class="table-container">
                 <table>
@@ -462,13 +465,14 @@
         </div>
     </div>
 
+    <!-- Designation Breakdown Modal -->
     <div id="desig-modal" class="modal" style="z-index: 1050;">
         <div class="detail-card-wrap" style="max-width: 750px;">
             <button class="close-popup-btn" onclick="closeDesignationModal()">&times;</button>
             
             <div style="border-bottom: 2px solid #e0f2fe; padding-bottom: 10px; margin-bottom: 15px;">
                 <h2 style="font-size: 18px; color: #0369a1;">📊 Designation Breakdown & History</h2>
-                <p style="font-size: 12px; color: #64748b;">Monthly staff distribution & designation reports</p>
+                <p style="font-size: 12px; color: #64748b;">💡 <b>Tip:</b> Click on any designation row to filter employees in main list!</p>
             </div>
 
             <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: space-between; align-items: center; background: #f0f9ff; padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #bae6fd;">
@@ -485,7 +489,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Designation</th>
+                            <th>Designation (Click to Filter)</th>
                             <th>Total Staff</th>
                             <th>Percentage (%)</th>
                         </tr>
@@ -500,7 +504,7 @@
         </div>
     </div>
 
-    <!-- Helper Functions for Timestamp -->
+    <!-- Timestamp Helper -->
     <script>
         function getCurrentFormattedDateTime() {
             const now = new Date();
@@ -509,7 +513,7 @@
         }
     </script>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK & Sync Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, writeBatch, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -601,7 +605,6 @@
             if (finalDesignation === 'Other') finalDesignation = document.getElementById('customDesignation').value || 'Other';
 
             let existingEmp = window.employees.find(e => e.firestoreId === editDocId) || {};
-
             const uploadTime = existingEmp.uploadedAt || getCurrentFormattedDateTime();
 
             const newEmp = {
@@ -637,7 +640,7 @@
                     alert("✅ Employee record updated successfully!");
                 } else {
                     await addDoc(empCollection, newEmp);
-                    alert(`✅ New employee saved successfully!\n📅 Upload Time: ${uploadTime}`);
+                    alert(`✅ New employee saved successfully!`);
                 }
                 resetFormState();
             } catch (err) {
@@ -669,7 +672,7 @@
             }
         };
 
-        // EXCEL IMPORT WITH UPLOAD TIME TRACKING
+        // EXCEL IMPORT WITH AUTOMATIC UPDATE/SYNC LOGIC
         window.importFromExcel = function(event) {
             const file = event.target ? event.target.files[0] : event;
             if (!file) return;
@@ -687,8 +690,7 @@
                     }
 
                     let addedCount = 0;
-                    let duplicatesList = [];
-                    let processedBatchIds = new Set();
+                    let updatedCount = 0;
                     const batchUploadTime = getCurrentFormattedDateTime();
 
                     for (let row of excelData) {
@@ -700,50 +702,45 @@
 
                         if (!id) continue;
 
-                        const isExistInDb = (window.employees || []).some(emp => String(emp.id).toLowerCase() === id.toLowerCase());
-                        const isExistInBatch = processedBatchIds.has(id.toLowerCase());
+                        const existingEmp = (window.employees || []).find(emp => String(emp.id).toLowerCase() === id.toLowerCase());
 
-                        if (isExistInDb || isExistInBatch) {
-                            duplicatesList.push(`• ID: ${id} (${name})`);
-                            continue;
-                        }
-
-                        processedBatchIds.add(id.toLowerCase());
-
-                        const newEmp = {
-                            uploadedAt: batchUploadTime,
-                            photo: defaultAvatar,
-                            iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "", reasonPic: "",
+                        const empPayload = {
                             id: id,
                             name: name,
-                            nationality: String(row["Nationality"] || "Other"),
-                            designation: String(row["Designation"] || "Other"),
-                            project: String(row["Project"] || "Al Majmaah Main Site"),
-                            mobile: String(row["Mobile"] || row["Mobile Number"] || ""),
-                            startDate: formatDateStandard(row["Start Date"] || row["StartDate"] || ""),
-                            lastDate: formatDateStandard(row["Last Date"] || row["LastDate"] || ""),
-                            leavingReason: String(row["Leaving Reason"] || ""),
-                            iqama: String(row["Iqama"] || row["Iqama Number"] || ""),
-                            iqamaExp: formatDateStandard(row["Iqama Expiry"] || row["IqamaExp"] || ""),
-                            passport: String(row["Passport"] || row["Passport Number"] || ""),
-                            passportExp: formatDateStandard(row["Passport Expiry"] || row["PassportExp"] || ""),
-                            scfhsExp: formatDateStandard(row["SCFHS Expiry"] || row["SCFHS"] || ""),
-                            salary: parseFloat(row["Salary"]) || 0,
-                            bank: String(row["Bank"] || row["Bank Name"] || "N/A"),
-                            emergency: String(row["Emergency"] || row["Emergency Contact"] || "N/A")
+                            nationality: String(row["Nationality"] || existingEmp?.nationality || "Other"),
+                            designation: String(row["Designation"] || existingEmp?.designation || "Other"),
+                            project: String(row["Project"] || existingEmp?.project || "Al Majmaah Main Site"),
+                            mobile: String(row["Mobile"] || row["Mobile Number"] || existingEmp?.mobile || ""),
+                            startDate: formatDateStandard(row["Start Date"] || row["StartDate"] || existingEmp?.startDate || ""),
+                            lastDate: formatDateStandard(row["Last Date"] || row["LastDate"] || existingEmp?.lastDate || ""),
+                            leavingReason: String(row["Leaving Reason"] || existingEmp?.leavingReason || ""),
+                            iqama: String(row["Iqama"] || row["Iqama Number"] || existingEmp?.iqama || ""),
+                            iqamaExp: formatDateStandard(row["Iqama Expiry"] || row["IqamaExp"] || existingEmp?.iqamaExp || ""),
+                            passport: String(row["Passport"] || row["Passport Number"] || existingEmp?.passport || ""),
+                            passportExp: formatDateStandard(row["Passport Expiry"] || row["PassportExp"] || existingEmp?.passportExp || ""),
+                            scfhsExp: formatDateStandard(row["SCFHS Expiry"] || row["SCFHS"] || existingEmp?.scfhsExp || ""),
+                            salary: parseFloat(row["Salary"]) || existingEmp?.salary || 0,
+                            bank: String(row["Bank"] || row["Bank Name"] || existingEmp?.bank || "N/A"),
+                            emergency: String(row["Emergency"] || row["Emergency Contact"] || existingEmp?.emergency || "N/A")
                         };
 
-                        await addDoc(empCollection, newEmp);
-                        addedCount++;
+                        if (existingEmp) {
+                            // Update Existing Employee Sync Data
+                            await updateDoc(doc(db, "employees", existingEmp.firestoreId), empPayload);
+                            updatedCount++;
+                        } else {
+                            // Add New Employee Data
+                            await addDoc(empCollection, {
+                                ...empPayload,
+                                uploadedAt: batchUploadTime,
+                                photo: defaultAvatar,
+                                iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "", reasonPic: ""
+                            });
+                            addedCount++;
+                        }
                     }
 
-                    let msg = `✅ Excel Processing Complete!\n\n✔️ Successfully Uploaded: ${addedCount} New Employees\n📅 Upload Timestamp: ${batchUploadTime}`;
-                    
-                    if (duplicatesList.length > 0) {
-                        msg += `\n\n⚠️ Skipped ${duplicatesList.length} Duplicate Records:\n` + duplicatesList.slice(0, 8).join("\n");
-                    }
-
-                    alert(msg);
+                    alert(`🔄 Excel Sync Successful!\n\n✨ New Added: ${addedCount} Employees\n✏️ Updated Records: ${updatedCount} Employees\n📅 Timestamp: ${batchUploadTime}`);
 
                 } catch (err) {
                     alert("❌ Excel Upload Error: " + err.message);
@@ -769,7 +766,6 @@
             initDragDropAndPaste();
         };
 
-        // DRAG & DROP + CLIPBOARD PASTE SYSTEM FOR ALL FILE INPUTS
         function initDragDropAndPaste() {
             const fileInputs = document.querySelectorAll('input[type="file"]');
 
@@ -777,7 +773,6 @@
                 input.addEventListener('focus', () => lastFocusedFileInput = input);
                 input.addEventListener('click', () => lastFocusedFileInput = input);
 
-                // Drag over effect
                 input.addEventListener('dragover', (e) => {
                     e.preventDefault();
                     input.classList.add('drag-over');
@@ -787,7 +782,6 @@
                     input.classList.remove('drag-over');
                 });
 
-                // Drop file event
                 input.addEventListener('drop', (e) => {
                     e.preventDefault();
                     input.classList.remove('drag-over');
@@ -797,7 +791,6 @@
                 });
             });
 
-            // Global Clipboard Paste Support (Ctrl + V)
             document.addEventListener('paste', (e) => {
                 const items = (e.clipboardData || e.originalEvent.clipboardData).items;
                 let imageFile = null;
@@ -811,18 +804,12 @@
 
                 if (imageFile) {
                     let targetInput = lastFocusedFileInput;
-                    if (!targetInput) {
-                        targetInput = document.getElementById('photo'); // Default to photo if none focused
-                    }
-
-                    if (targetInput) {
-                        processFile(imageFile, targetInput);
-                    }
+                    if (!targetInput) targetInput = document.getElementById('photo');
+                    if (targetInput) processFile(imageFile, targetInput);
                 }
             });
         }
 
-        // Helper to process dropped/pasted files
         function processFile(file, inputElem) {
             const key = inputElem.getAttribute('data-key');
             const reader = new FileReader();
@@ -976,6 +963,14 @@
             renderData();
         }
 
+        function resetSearchFilter() {
+            showOnlyExpired = false;
+            document.getElementById('search-input').value = '';
+            document.getElementById('table-heading').innerText = "📋 Employee Directory";
+            document.getElementById('table-heading').style.color = "#0f172a";
+            renderData();
+        }
+
         function renderData() {
             const tbody = document.getElementById('employee-table-body');
             if(!tbody) return;
@@ -1022,6 +1017,18 @@
             filterEmployees();
         }
 
+        // DESIGNATION CLICK FILTER FUNCTION
+        function filterByDesignationFromModal(desigName) {
+            closeDesignationModal();
+            document.getElementById('search-input').value = desigName;
+            filterEmployees();
+            document.getElementById('table-heading').innerText = `📋 Filtered Staff: ${desigName}`;
+            document.getElementById('table-heading').style.color = "#0284c7";
+            
+            // Scroll down to table smooth
+            document.querySelector('.table-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
         function openDesignationModal() {
             document.getElementById('history-month-select').value = 'current';
             renderDesignationTable();
@@ -1060,8 +1067,8 @@
                 const percentage = ((count / total) * 100).toFixed(1);
 
                 tbody.innerHTML += `
-                    <tr>
-                        <td style="font-weight:700; color:#0f172a;">${desig}</td>
+                    <tr class="desig-row-clickable" onclick="filterByDesignationFromModal('${desig.replace(/'/g, "\\'")}')" title="Click to view all ${desig}">
+                        <td style="font-weight:700; color:#0f172a;">${desig} 🔍</td>
                         <td style="font-weight:800; color:#0284c7;">${count}</td>
                         <td><span class="badge badge-blue">${percentage}%</span></td>
                     </tr>
@@ -1101,7 +1108,6 @@
             document.getElementById('pop-id').innerText = "ID: " + emp.id;
 
             document.getElementById('pop-uploaded-at').innerText = emp.uploadedAt || 'Not Available';
-
             document.getElementById('pop-nat').innerText = emp.nationality || 'N/A';
             document.getElementById('pop-project').innerText = emp.project || 'N/A';
             document.getElementById('pop-mobile').innerText = emp.mobile || 'N/A';
@@ -1251,7 +1257,6 @@
             }
         }
 
-        // CSV EXPORT WITH UPLOAD & DOWNLOAD TIME TRACKING
         function exportToCSV() {
             if(!window.employees || window.employees.length === 0) return alert('No records to export!');
             
