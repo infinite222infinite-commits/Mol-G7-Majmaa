@@ -73,7 +73,6 @@
         input, select, textarea { background: #fff; border: 2px solid #e0f2fe; padding: 10px 12px; border-radius: 12px; font-size: 13px; outline: none; width: 100%; transition: all 0.2s ease; }
         textarea { resize: vertical; min-height: 42px; }
 
-        /* Drag & Drop Highlight Styles */
         input[type="file"] {
             border: 2px dashed #0ea5e9;
             background: #f0f9ff;
@@ -133,12 +132,12 @@
         .detail-item { background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; }
         .detail-item span { display: block; font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
         .detail-item p { font-size: 12px; font-weight: 700; color: #0f172a; word-break: break-all; }
-        .close-popup-btn { position: absolute; top: 15px; right: 15px; background: #f1f5f9; border: none; font-size: 18px; font-weight: bold; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; color: #64748b; }
+        .close-popup-btn { position: absolute; top: 15px; right: 15px; background: #f1f5f9; border: none; font-size: 18px; font-weight: bold; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; color: #64748b; z-index: 10; }
         .close-popup-btn:hover { background: #e2e8f0; color: #0f172a; }
 
         .doc-viewer-wrap {
-            background: #0f172a; width: 100%; max-width: 800px; max-height: 85vh;
-            border-radius: 18px; padding: 15px; text-align: center; position: relative;
+            background: #0f172a; width: 100%; max-width: 850px; max-height: 88vh;
+            border-radius: 18px; padding: 20px; text-align: center; position: relative;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 1px solid #334155;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
@@ -245,7 +244,7 @@
             <form id="employee-form" class="form-grid" autocomplete="off">
                 <input type="hidden" id="edit-doc-id" value="">
 
-                <div class="field-group"><label>Employee Photo (Drag / Paste)</label><input type="file" id="photo" accept="image/*" onchange="handleFileRead(event, 'photo')" data-key="photo"></div>
+                <div class="field-group"><label>Employee Photo (Drag / Paste Image)</label><input type="file" id="photo" accept="image/*" onchange="handleFileRead(event, 'photo')" data-key="photo"></div>
                 <div class="field-group"><label>Employee ID *</label><input type="text" id="empId" placeholder="EMP-101" required autocomplete="off"></div>
                 <div class="field-group"><label>Full Name *</label><input type="text" id="empName" placeholder="Full Name" required autocomplete="off"></div>
 
@@ -307,7 +306,7 @@
                     </div>
                 </div>
                 
-                <div class="field-group"><label style="color: #0284c7;">Iqama Picture / Scan (Drag/Paste)</label><input type="file" id="iqamaPicInput" accept="image/*" onchange="handleFileRead(event, 'iqamaPic')" data-key="iqamaPic"></div>
+                <div class="field-group"><label style="color: #0284c7;">Iqama (Image / PDF)</label><input type="file" id="iqamaPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'iqamaPic')" data-key="iqamaPic"></div>
 
                 <div class="field-group"><label>Passport Number</label><input type="text" id="passport" placeholder="Passport No" autocomplete="off"></div>
                 
@@ -320,7 +319,7 @@
                     </div>
                 </div>
 
-                <div class="field-group"><label style="color: #0284c7;">Passport Picture / Scan (Drag/Paste)</label><input type="file" id="passportPicInput" accept="image/*" onchange="handleFileRead(event, 'passportPic')" data-key="passportPic"></div>
+                <div class="field-group"><label style="color: #0284c7;">Passport (Image / PDF)</label><input type="file" id="passportPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'passportPic')" data-key="passportPic"></div>
 
                 <div id="scfhs-box" class="field-group hidden">
                     <label style="color: #0284c7;">SCFHS Expiry (Medical)</label>
@@ -331,9 +330,9 @@
                     </div>
                 </div>
 
-                <div id="scfhs-pic-box" class="field-group hidden"><label style="color: #0284c7;">SCFHS Card Picture (Drag/Paste)</label><input type="file" id="scfhsPicInput" accept="image/*" onchange="handleFileRead(event, 'scfhsPic')" data-key="scfhsPic"></div>
+                <div id="scfhs-pic-box" class="field-group hidden"><label style="color: #0284c7;">SCFHS Card (Image / PDF)</label><input type="file" id="scfhsPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'scfhsPic')" data-key="scfhsPic"></div>
 
-                <div class="field-group"><label style="color: #0284c7;">Baladiya / Health Card Pic (Drag/Paste)</label><input type="file" id="baladiyaPicInput" accept="image/*" onchange="handleFileRead(event, 'baladiyaPic')" data-key="baladiyaPic"></div>
+                <div class="field-group"><label style="color: #0284c7;">Baladiya / Health Card (Image / PDF)</label><input type="file" id="baladiyaPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'baladiyaPic')" data-key="baladiyaPic"></div>
 
                 <div class="field-group"><label>Salary (SAR)</label><input type="number" id="salary" placeholder="Salary" autocomplete="off"></div>
                 <div class="field-group"><label>Bank Name</label><input type="text" id="bank" placeholder="Bank Name" autocomplete="off"></div>
@@ -358,7 +357,7 @@
                 </div>
 
                 <div class="field-group" style="grid-column: span 2;"><label style="color: #e11d48;">Reason for Leaving</label><input type="text" id="leavingReason" placeholder="Reason for leaving / Termination details..." autocomplete="off"></div>
-                <div class="field-group"><label style="color: #e11d48;">Reason Paper Scan (Drag/Paste)</label><input type="file" id="reasonPicInput" accept="image/*" onchange="handleFileRead(event, 'reasonPic')" data-key="reasonPic"></div>
+                <div class="field-group"><label style="color: #e11d48;">Reason Paper (Image / PDF)</label><input type="file" id="reasonPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'reasonPic')" data-key="reasonPic"></div>
 
                 <button type="submit" id="save-btn" class="btn-stylish btn-success" style="grid-column: 1 / -1; margin-top: 15px;">💾 Save Employee Record to Cloud</button>
             </form>
@@ -371,7 +370,6 @@
                 <div class="table-controls-wrap" style="display: flex; gap: 8px; align-items: center; width: 100%; max-width: 520px;">
                     <input type="text" id="search-input" onkeyup="handleManualSearchInput()" placeholder="🔍 Search ID, Designation, Name..." style="flex: 1;">
                     <button onclick="resetSearchFilter()" class="btn-stylish" style="padding: 8px 12px; font-size: 11px; background: #64748b; width: auto;">Reset</button>
-                    <!-- New Filtered Export Button -->
                     <button onclick="exportFilteredToCSV()" class="btn-stylish btn-success" style="padding: 8px 12px; font-size: 11px; width: auto;" title="Export only filtered list">📥 Filtered CSV</button>
                 </div>
             </div>
@@ -460,11 +458,16 @@
         </div>
     </div>
 
+    <!-- PDF & Image Compatible Document Viewer -->
     <div id="doc-viewer-modal" class="modal" style="z-index: 1100;">
         <div class="doc-viewer-wrap">
             <button class="close-popup-btn" onclick="closeDocViewer()" style="color: white; background: #334155;">&times;</button>
             <h3 id="doc-title" style="color: white; margin-bottom: 15px; font-size: 15px;">Document Viewer</h3>
-            <img id="doc-img-target" src="" alt="Document Preview">
+            
+            <img id="doc-img-target" src="" alt="Document Preview" style="display:none; max-width: 100%; max-height: 70vh; border-radius: 10px; object-fit: contain;">
+            <iframe id="doc-iframe-target" src="" style="display:none; width: 100%; height: 68vh; border: none; border-radius: 10px; background: white;"></iframe>
+            
+            <a id="doc-open-link" href="" target="_blank" class="btn-stylish btn-success" style="display:none; margin-top:12px; font-size: 12px; text-decoration: none;">↗️ Open / Download PDF in New Tab</a>
         </div>
     </div>
 
@@ -757,7 +760,7 @@
     <script>
         let showOnlyExpired = false;
         let lastFocusedFileInput = null;
-        window.activeDesignationFilter = null; // Stores exact designation filter state
+        window.activeDesignationFilter = null;
 
         window.onload = function() {
             loadSavedCustomizations();
@@ -795,19 +798,19 @@
 
             document.addEventListener('paste', (e) => {
                 const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-                let imageFile = null;
+                let file = null;
 
                 for (let item of items) {
-                    if (item.type.indexOf('image') !== -1) {
-                        imageFile = item.getAsFile();
+                    if (item.type.indexOf('image') !== -1 || item.type === 'application/pdf') {
+                        file = item.getAsFile();
                         break;
                     }
                 }
 
-                if (imageFile) {
+                if (file) {
                     let targetInput = lastFocusedFileInput;
                     if (!targetInput) targetInput = document.getElementById('photo');
-                    if (targetInput) processFile(imageFile, targetInput);
+                    if (targetInput) processFile(file, targetInput);
                 }
             });
         }
@@ -979,19 +982,16 @@
         }
 
         function handleManualSearchInput() {
-            // When user types manually, clear exact designation filter lock
             window.activeDesignationFilter = null;
             document.getElementById('table-heading').innerText = "📋 Employee Directory";
             document.getElementById('table-heading').style.color = "#0f172a";
             renderData();
         }
 
-        // Returns currently filtered employees array
         function getFilteredEmployees() {
             const searchVal = document.getElementById('search-input') ? document.getElementById('search-input').value.trim().toLowerCase() : '';
 
             return (window.employees || []).filter(emp => {
-                // Expired filter check
                 if (showOnlyExpired) {
                     const iqamaStatus = checkExpiryStatus(emp.iqamaExp);
                     const passportStatus = checkExpiryStatus(emp.passportExp);
@@ -1000,16 +1000,12 @@
                     if (!hasAlert) return false;
                 }
 
-                // Exact Designation filter (triggered from Breakdown Modal)
                 if (window.activeDesignationFilter) {
                     if (String(emp.designation).trim().toLowerCase() !== window.activeDesignationFilter.trim().toLowerCase()) {
                         return false;
                     }
                 } else if (searchVal) {
-                    // Standard manual search matching
                     const combinedText = `${emp.id} ${emp.name} ${emp.designation} ${emp.project} ${emp.mobile} ${emp.nationality} ${emp.iqama}`.toLowerCase();
-                    
-                    // Word boundary check to prevent "male" matching "female"
                     const searchWords = searchVal.split(/\s+/);
                     const allWordsMatch = searchWords.every(word => {
                         const regex = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
@@ -1030,7 +1026,6 @@
 
             let expiringAlerts = 0, totalSalary = 0;
 
-            // Calculate overall alerts and salary totals across all staff
             (window.employees || []).forEach((emp) => {
                 const iqamaStatus = checkExpiryStatus(emp.iqamaExp);
                 const passportStatus = checkExpiryStatus(emp.passportExp);
@@ -1053,7 +1048,6 @@
             }
 
             filteredList.forEach((emp) => {
-                // Find index in global array for ID card generation
                 const globalIdx = window.employees.findIndex(e => e.firestoreId === emp.firestoreId);
 
                 tbody.innerHTML += `
@@ -1078,19 +1072,16 @@
             });
         }
 
-        // EXACT DESIGNATION CLICK FILTER FUNCTION
         function filterByDesignationFromModal(desigName) {
             closeDesignationModal();
             showOnlyExpired = false;
-            window.activeDesignationFilter = desigName; // Set exact designation lock
+            window.activeDesignationFilter = desigName;
             
             document.getElementById('search-input').value = desigName;
             document.getElementById('table-heading').innerText = `📋 Filtered Staff: ${desigName}`;
             document.getElementById('table-heading').style.color = "#0284c7";
             
             renderData();
-
-            // Smooth scroll to table
             document.querySelector('.table-container').scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -1188,8 +1179,8 @@
             document.getElementById('pop-emergency').innerText = emp.emergency || 'N/A';
 
             let docsHtml = '';
-            if(emp.iqamaPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'iqamaPic', 'Iqama Document')">📄 Iqama Scan</button>`;
-            if(emp.passportPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'passportPic', 'Passport Document')">📄 Passport Scan</button>`;
+            if(emp.iqamaPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'iqamaPic', 'Iqama Document')">📄 Iqama Document</button>`;
+            if(emp.passportPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'passportPic', 'Passport Document')">📄 Passport Document</button>`;
             if(emp.scfhsPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'scfhsPic', 'SCFHS Document')">📄 SCFHS Card</button>`;
             if(emp.baladiyaPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'baladiyaPic', 'Baladiya Document')">📄 Baladiya Card</button>`;
             if(emp.reasonPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'reasonPic', 'Leaving Reason Paper')">📄 Reason Paper Scan</button>`;
@@ -1201,16 +1192,42 @@
 
         function closeDetailModal() { document.getElementById('detail-modal').style.display = 'none'; }
 
+        // PDF and Image Viewer Logic
         function openDocViewer(firestoreId, fieldKey, title) {
             const emp = window.employees.find(e => e.firestoreId === firestoreId);
-            if (!emp || !emp[fieldKey]) return alert(title + ' scan not attached!');
+            if (!emp || !emp[fieldKey]) return alert(title + ' file not attached!');
 
+            const fileData = emp[fieldKey];
             document.getElementById('doc-title').innerText = title + ' - ' + emp.name;
-            document.getElementById('doc-img-target').src = emp[fieldKey];
+
+            const imgTarget = document.getElementById('doc-img-target');
+            const iframeTarget = document.getElementById('doc-iframe-target');
+            const openLink = document.getElementById('doc-open-link');
+
+            // Detect PDF Data URL or PDF extension
+            if (fileData.startsWith('data:application/pdf') || fileData.toLowerCase().includes('.pdf')) {
+                imgTarget.style.display = 'none';
+                iframeTarget.style.display = 'block';
+                iframeTarget.src = fileData;
+                
+                openLink.style.display = 'inline-flex';
+                openLink.href = fileData;
+            } else {
+                // Regular Image
+                iframeTarget.style.display = 'none';
+                openLink.style.display = 'none';
+                
+                imgTarget.style.display = 'block';
+                imgTarget.src = fileData;
+            }
+
             document.getElementById('doc-viewer-modal').style.display = 'flex';
         }
 
-        function closeDocViewer() { document.getElementById('doc-viewer-modal').style.display = 'none'; }
+        function closeDocViewer() { 
+            document.getElementById('doc-viewer-modal').style.display = 'none';
+            document.getElementById('doc-iframe-target').src = '';
+        }
 
         function editEmployee(firestoreId) {
             const emp = window.employees.find(e => e.firestoreId === firestoreId);
@@ -1274,7 +1291,7 @@
             const desigModal = document.getElementById('desig-modal');
             if (event.target === detailModal) detailModal.style.display = 'none';
             if (event.target === idModal) idModal.style.display = 'none';
-            if (event.target === docViewerModal) docViewerModal.style.display = 'none';
+            if (event.target === docViewerModal) closeDocViewer();
             if (event.target === desigModal) desigModal.style.display = 'none';
         }
 
@@ -1316,7 +1333,6 @@
             }
         }
 
-        // FULL DATABASE CSV EXPORT
         function exportToCSV() {
             if(!window.employees || window.employees.length === 0) return alert('No records to export!');
             
@@ -1338,7 +1354,6 @@
             alert(`📥 Full Database Export Downloaded!\n\n📊 Total Records: ${window.employees.length}\n📅 Download Time: ${downloadTime}\n📁 Filename: Al_Majmaah_ALL_Employees_${dateFileName}.csv`);
         }
 
-        // FILTERED DATA CSV EXPORT ONLY
         function exportFilteredToCSV() {
             const filteredList = getFilteredEmployees();
 
