@@ -73,7 +73,7 @@
         input, select, textarea { background: #fff; border: 2px solid #e0f2fe; padding: 10px 12px; border-radius: 12px; font-size: 13px; outline: none; width: 100%; }
         textarea { resize: vertical; min-height: 42px; }
 
-        /* Custom Date Container for Typing + Icon */
+        /* Custom Date Container */
         .date-input-wrap { position: relative; display: flex; align-items: center; }
         .date-input-wrap input[type="text"] { padding-right: 35px; }
         .date-picker-trigger { position: absolute; right: 10px; cursor: pointer; font-size: 16px; opacity: 0.7; }
@@ -279,7 +279,6 @@
 
                 <div class="field-group"><label>Iqama Number</label><input type="text" id="iqama" placeholder="Iqama No" autocomplete="off"></div>
                 
-                <!-- EASY MANUAL DATE INPUT (YYYY-MM-DD or DD/MM/YYYY) -->
                 <div class="field-group">
                     <label>Iqama Expiry Date</label>
                     <div class="date-input-wrap">
@@ -557,7 +556,7 @@
             const editDocId = document.getElementById('edit-doc-id').value;
             const empIdVal = document.getElementById('empId').value.trim();
 
-            const duplicate = window.employees.find(e => e.id.toLowerCase() === empIdVal.toLowerCase() && e.firestoreId !== editDocId);
+            const duplicate = window.employees.find(e => String(e.id).toLowerCase() === empIdVal.toLowerCase() && e.firestoreId !== editDocId);
             if (duplicate) {
                 return alert(`⚠️ Employee with ID (${empIdVal}) already exists!`);
             }
@@ -636,48 +635,93 @@
             }
         };
 
+        // EXCEL IMPORT WITH SMOOTH UPLOAD + DUPLICATE ALERTS
         window.importFromExcel = function(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
             reader.onload = async function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                const excelData = XLSX.utils.sheet_to_json(worksheet);
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const excelData = XLSX.utils.sheet_to_json(worksheet);
 
-                if (excelData.length === 0) return alert("Excel sheet is empty!");
+                    if (!excelData || excelData.length === 0) {
+                        return alert("⚠️ Excel sheet is empty or invalid format!");
+                    }
 
-                for (let row of excelData) {
-                    const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
-                    const id = String(row["ID"] || row["Emp ID"] || `EMP-${Math.floor(Math.random()*1000)}`);
+                    let addedCount = 0;
+                    let duplicatesList = [];
+                    let processedBatchIds = new Set();
 
-                    const newEmp = {
-                        photo: defaultAvatar, iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "", reasonPic: "",
-                        id: id,
-                        name: row["Name"] || row["Full Name"] || "N/A",
-                        nationality: row["Nationality"] || "Other",
-                        designation: row["Designation"] || "Other",
-                        project: row["Project"] || "Al Majmaah Main Site",
-                        mobile: String(row["Mobile"] || row["Mobile Number"] || ""),
-                        startDate: formatDateStandard(row["Start Date"] || ""),
-                        lastDate: formatDateStandard(row["Last Date"] || ""),
-                        leavingReason: row["Leaving Reason"] || "",
-                        iqama: String(row["Iqama"] || row["Iqama Number"] || ""),
-                        iqamaExp: formatDateStandard(row["Iqama Expiry"] || row["IqamaExp"] || ""),
-                        passport: String(row["Passport"] || row["Passport Number"] || ""),
-                        passportExp: formatDateStandard(row["Passport Expiry"] || row["PassportExp"] || ""),
-                        scfhsExp: formatDateStandard(row["SCFHS Expiry"] || row["SCFHS"] || ""),
-                        salary: parseFloat(row["Salary"]) || 0,
-                        bank: row["Bank"] || row["Bank Name"] || "N/A",
-                        emergency: row["Emergency"] || row["Emergency Contact"] || "N/A"
-                    };
-                    await addDoc(empCollection, newEmp);
+                    for (let row of excelData) {
+                        const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+                        
+                        const rawId = row["ID"] || row["Emp ID"] || row["Employee ID"] || `EMP-${Math.floor(Math.random()*1000)}`;
+                        const id = String(rawId).trim();
+                        const name = String(row["Name"] || row["Full Name"] || "N/A").trim();
+
+                        if (!id) continue;
+
+                        // Check duplicate in Firebase employees AND in current excel sheet
+                        const isExistInDb = (window.employees || []).some(emp => String(emp.id).toLowerCase() === id.toLowerCase());
+                        const isExistInBatch = processedBatchIds.has(id.toLowerCase());
+
+                        if (isExistInDb || isExistInBatch) {
+                            duplicatesList.push(`• ID: ${id} (${name})`);
+                            continue; // Skip duplicate record smoothly
+                        }
+
+                        processedBatchIds.add(id.toLowerCase());
+
+                        const newEmp = {
+                            photo: defaultAvatar,
+                            iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "", reasonPic: "",
+                            id: id,
+                            name: name,
+                            nationality: String(row["Nationality"] || "Other"),
+                            designation: String(row["Designation"] || "Other"),
+                            project: String(row["Project"] || "Al Majmaah Main Site"),
+                            mobile: String(row["Mobile"] || row["Mobile Number"] || ""),
+                            startDate: formatDateStandard(row["Start Date"] || row["StartDate"] || ""),
+                            lastDate: formatDateStandard(row["Last Date"] || row["LastDate"] || ""),
+                            leavingReason: String(row["Leaving Reason"] || ""),
+                            iqama: String(row["Iqama"] || row["Iqama Number"] || ""),
+                            iqamaExp: formatDateStandard(row["Iqama Expiry"] || row["IqamaExp"] || ""),
+                            passport: String(row["Passport"] || row["Passport Number"] || ""),
+                            passportExp: formatDateStandard(row["Passport Expiry"] || row["PassportExp"] || ""),
+                            scfhsExp: formatDateStandard(row["SCFHS Expiry"] || row["SCFHS"] || ""),
+                            salary: parseFloat(row["Salary"]) || 0,
+                            bank: String(row["Bank"] || row["Bank Name"] || "N/A"),
+                            emergency: String(row["Emergency"] || row["Emergency Contact"] || "N/A")
+                        };
+
+                        await addDoc(empCollection, newEmp);
+                        addedCount++;
+                    }
+
+                    // Alert Summary Setup
+                    let msg = `✅ Excel Processing Complete!\n\n✔️ Successfully Uploaded: ${addedCount} New Employees`;
+                    
+                    if (duplicatesList.length > 0) {
+                        msg += `\n\n⚠️ Skipped ${duplicatesList.length} Duplicate Records:\n` + duplicatesList.slice(0, 8).join("\n");
+                        if (duplicatesList.length > 8) {
+                            msg += `\n...and ${duplicatesList.length - 8} more.`;
+                        }
+                    }
+
+                    alert(msg);
+
+                } catch (err) {
+                    alert("❌ Excel Upload Error: " + err.message);
+                } finally {
+                    event.target.value = '';
                 }
-                alert(`✅ ${excelData.length} Employees imported successfully!`);
             };
-            reader.readAsBuffer(file);
+
+            reader.readAsArrayBuffer(file);
         };
     </script>
 
@@ -692,7 +736,6 @@
             }
         };
 
-        // Date helper function
         function syncDatePicker(inputId, selectedVal) {
             document.getElementById(inputId).value = selectedVal;
         }
