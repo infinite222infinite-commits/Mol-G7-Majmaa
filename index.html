@@ -166,6 +166,7 @@
             .detail-header { flex-direction: column; text-align: center; }
             .btn-stylish { width: 100%; }
             #search-input { max-width: 100% !important; }
+            .table-controls-wrap { flex-direction: column; width: 100% !important; max-width: 100% !important; }
         }
     </style>
 </head>
@@ -211,7 +212,7 @@
                     <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" onchange="importFromExcel(event)" style="display:none;">
                     <label for="excel-file-input" style="color: #0284c7; cursor: pointer; text-decoration: underline;">Import / Sync</label>
                 </div>
-                <button onclick="exportToCSV()" class="btn-stylish btn-success">📥 CSV Export</button>
+                <button onclick="exportToCSV()" class="btn-stylish btn-success" title="Download Entire Employee Database">📥 All CSV Export</button>
                 <button id="admin-reset-btn" onclick="clearAllData()" class="btn-stylish btn-danger admin-only">🗑️ Reset</button>
                 <button onclick="handleLogout()" class="btn-stylish" style="background: #64748b;">🚪 Logout</button>
             </div>
@@ -367,9 +368,11 @@
         <div class="card-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="font-size: 16px;" id="table-heading">📋 Employee Directory</h2>
-                <div style="display: flex; gap: 8px; align-items: center; width: 100%; max-width: 320px;">
-                    <input type="text" id="search-input" onkeyup="filterEmployees()" placeholder="🔍 Search ID, Designation, Name..." style="flex: 1;">
-                    <button onclick="resetSearchFilter()" class="btn-stylish" style="padding: 8px 12px; font-size: 11px; background: #64748b;">Reset</button>
+                <div class="table-controls-wrap" style="display: flex; gap: 8px; align-items: center; width: 100%; max-width: 520px;">
+                    <input type="text" id="search-input" onkeyup="handleManualSearchInput()" placeholder="🔍 Search ID, Designation, Name..." style="flex: 1;">
+                    <button onclick="resetSearchFilter()" class="btn-stylish" style="padding: 8px 12px; font-size: 11px; background: #64748b; width: auto;">Reset</button>
+                    <!-- New Filtered Export Button -->
+                    <button onclick="exportFilteredToCSV()" class="btn-stylish btn-success" style="padding: 8px 12px; font-size: 11px; width: auto;" title="Export only filtered list">📥 Filtered CSV</button>
                 </div>
             </div>
             <div class="table-container">
@@ -725,11 +728,9 @@
                         };
 
                         if (existingEmp) {
-                            // Update Existing Employee Sync Data
                             await updateDoc(doc(db, "employees", existingEmp.firestoreId), empPayload);
                             updatedCount++;
                         } else {
-                            // Add New Employee Data
                             await addDoc(empCollection, {
                                 ...empPayload,
                                 uploadedAt: batchUploadTime,
@@ -756,6 +757,7 @@
     <script>
         let showOnlyExpired = false;
         let lastFocusedFileInput = null;
+        window.activeDesignationFilter = null; // Stores exact designation filter state
 
         window.onload = function() {
             loadSavedCustomizations();
@@ -948,6 +950,9 @@
 
         function toggleExpiredFilter() {
             showOnlyExpired = !showOnlyExpired;
+            window.activeDesignationFilter = null;
+            document.getElementById('search-input').value = '';
+
             const cardBox = document.getElementById('alert-card-box');
             const heading = document.getElementById('table-heading');
             
@@ -965,29 +970,91 @@
 
         function resetSearchFilter() {
             showOnlyExpired = false;
+            window.activeDesignationFilter = null;
             document.getElementById('search-input').value = '';
             document.getElementById('table-heading').innerText = "📋 Employee Directory";
             document.getElementById('table-heading').style.color = "#0f172a";
+            document.getElementById('alert-card-box').style.background = 'var(--card-bg)';
             renderData();
+        }
+
+        function handleManualSearchInput() {
+            // When user types manually, clear exact designation filter lock
+            window.activeDesignationFilter = null;
+            document.getElementById('table-heading').innerText = "📋 Employee Directory";
+            document.getElementById('table-heading').style.color = "#0f172a";
+            renderData();
+        }
+
+        // Returns currently filtered employees array
+        function getFilteredEmployees() {
+            const searchVal = document.getElementById('search-input') ? document.getElementById('search-input').value.trim().toLowerCase() : '';
+
+            return (window.employees || []).filter(emp => {
+                // Expired filter check
+                if (showOnlyExpired) {
+                    const iqamaStatus = checkExpiryStatus(emp.iqamaExp);
+                    const passportStatus = checkExpiryStatus(emp.passportExp);
+                    const scfhsStatus = checkExpiryStatus(emp.scfhsExp);
+                    const hasAlert = iqamaStatus.isExpiring || passportStatus.isExpiring || (emp.scfhsExp && scfhsStatus.isExpiring);
+                    if (!hasAlert) return false;
+                }
+
+                // Exact Designation filter (triggered from Breakdown Modal)
+                if (window.activeDesignationFilter) {
+                    if (String(emp.designation).trim().toLowerCase() !== window.activeDesignationFilter.trim().toLowerCase()) {
+                        return false;
+                    }
+                } else if (searchVal) {
+                    // Standard manual search matching
+                    const combinedText = `${emp.id} ${emp.name} ${emp.designation} ${emp.project} ${emp.mobile} ${emp.nationality} ${emp.iqama}`.toLowerCase();
+                    
+                    // Word boundary check to prevent "male" matching "female"
+                    const searchWords = searchVal.split(/\s+/);
+                    const allWordsMatch = searchWords.every(word => {
+                        const regex = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+                        return regex.test(combinedText);
+                    });
+
+                    if (!allWordsMatch) return false;
+                }
+
+                return true;
+            });
         }
 
         function renderData() {
             const tbody = document.getElementById('employee-table-body');
             if(!tbody) return;
             tbody.innerHTML = '';
+
             let expiringAlerts = 0, totalSalary = 0;
 
-            (window.employees || []).forEach((emp, index) => {
+            // Calculate overall alerts and salary totals across all staff
+            (window.employees || []).forEach((emp) => {
                 const iqamaStatus = checkExpiryStatus(emp.iqamaExp);
                 const passportStatus = checkExpiryStatus(emp.passportExp);
                 const scfhsStatus = checkExpiryStatus(emp.scfhsExp);
-
-                const hasAlert = iqamaStatus.isExpiring || passportStatus.isExpiring || (emp.scfhsExp && scfhsStatus.isExpiring);
-
-                if (hasAlert) expiringAlerts++;
+                if (iqamaStatus.isExpiring || passportStatus.isExpiring || (emp.scfhsExp && scfhsStatus.isExpiring)) {
+                    expiringAlerts++;
+                }
                 totalSalary += (emp.salary || 0);
+            });
 
-                if (showOnlyExpired && !hasAlert) return;
+            document.getElementById('total-employees').innerText = (window.employees || []).length;
+            document.getElementById('expiring-count').innerText = expiringAlerts;
+            document.getElementById('total-salary').innerText = totalSalary.toLocaleString() + ' SAR';
+
+            const filteredList = getFilteredEmployees();
+
+            if (filteredList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#64748b; font-weight:700;">No matching employees found</td></tr>';
+                return;
+            }
+
+            filteredList.forEach((emp) => {
+                // Find index in global array for ID card generation
+                const globalIdx = window.employees.findIndex(e => e.firestoreId === emp.firestoreId);
 
                 tbody.innerHTML += `
                     <tr>
@@ -999,7 +1066,7 @@
                         <td>${emp.mobile}</td>
                         <td>
                             <button onclick="openDetailModal('${emp.firestoreId}')" class="btn-sm btn-view">👁️ View</button>
-                            <button onclick="openIDCard(${index})" class="btn-sm btn-card">🪪 Card</button>
+                            <button onclick="openIDCard(${globalIdx})" class="btn-sm btn-card">🪪 Card</button>
                             <button onclick="sendWhatsApp('${emp.mobile}', '${emp.iqamaExp}')" class="btn-sm btn-wa">💬 WA</button>
                             ${window.userRole === 'admin' ? `
                                 <button onclick="editEmployee('${emp.firestoreId}')" class="btn-sm btn-edit">✏️</button>
@@ -1009,23 +1076,21 @@
                     </tr>
                 `;
             });
-
-            document.getElementById('total-employees').innerText = (window.employees || []).length;
-            document.getElementById('expiring-count').innerText = expiringAlerts;
-            document.getElementById('total-salary').innerText = totalSalary.toLocaleString() + ' SAR';
-
-            filterEmployees();
         }
 
-        // DESIGNATION CLICK FILTER FUNCTION
+        // EXACT DESIGNATION CLICK FILTER FUNCTION
         function filterByDesignationFromModal(desigName) {
             closeDesignationModal();
+            showOnlyExpired = false;
+            window.activeDesignationFilter = desigName; // Set exact designation lock
+            
             document.getElementById('search-input').value = desigName;
-            filterEmployees();
             document.getElementById('table-heading').innerText = `📋 Filtered Staff: ${desigName}`;
             document.getElementById('table-heading').style.color = "#0284c7";
             
-            // Scroll down to table smooth
+            renderData();
+
+            // Smooth scroll to table
             document.querySelector('.table-container').scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -1187,6 +1252,7 @@
 
         function openIDCard(index) {
             const emp = window.employees[index];
+            if(!emp) return;
             document.getElementById('card-photo').src = emp.photo;
             document.getElementById('card-name').innerText = emp.name;
             document.getElementById('card-desig').innerText = emp.designation;
@@ -1210,13 +1276,6 @@
             if (event.target === idModal) idModal.style.display = 'none';
             if (event.target === docViewerModal) docViewerModal.style.display = 'none';
             if (event.target === desigModal) desigModal.style.display = 'none';
-        }
-
-        function filterEmployees() {
-            const q = document.getElementById('search-input').value.toLowerCase().trim();
-            document.querySelectorAll('#employee-table-body tr').forEach(r => {
-                r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
-            });
         }
 
         function uploadSystemLogo(event) {
@@ -1257,6 +1316,7 @@
             }
         }
 
+        // FULL DATABASE CSV EXPORT
         function exportToCSV() {
             if(!window.employees || window.employees.length === 0) return alert('No records to export!');
             
@@ -1272,10 +1332,36 @@
 
             const a = document.createElement('a'); 
             a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); 
-            a.download = `Al_Majmaah_Employees_${dateFileName}.csv`; 
+            a.download = `Al_Majmaah_ALL_Employees_${dateFileName}.csv`; 
             a.click();
 
-            alert(`📥 Report Downloaded Successfully!\n\n📅 Download Time: ${downloadTime}\n📁 Filename: Al_Majmaah_Employees_${dateFileName}.csv`);
+            alert(`📥 Full Database Export Downloaded!\n\n📊 Total Records: ${window.employees.length}\n📅 Download Time: ${downloadTime}\n📁 Filename: Al_Majmaah_ALL_Employees_${dateFileName}.csv`);
+        }
+
+        // FILTERED DATA CSV EXPORT ONLY
+        function exportFilteredToCSV() {
+            const filteredList = getFilteredEmployees();
+
+            if (!filteredList || filteredList.length === 0) {
+                return alert('⚠️ No filtered records found to export!');
+            }
+
+            const downloadTime = getCurrentFormattedDateTime();
+            let csv = 'ID,Name,Nationality,Designation,Project,Mobile,Uploaded Date & Time,Start Date,Last Date,Leaving Reason,Iqama,Iqama Expiry,Passport,Passport Expiry,SCFHS Expiry,Salary,Bank,Emergency Contact\n';
+            
+            filteredList.forEach(e => {
+                csv += `"${e.id}","${e.name}","${e.nationality}","${e.designation}","${e.project}","${e.mobile}","${e.uploadedAt || 'N/A'}","${e.startDate}","${e.lastDate}","${e.leavingReason}","${e.iqama}","${e.iqamaExp}","${e.passport}","${e.passportExp}","${e.scfhsExp}","${e.salary}","${e.bank}","${e.emergency}"\n`;
+            });
+
+            const now = new Date();
+            const dateFileName = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}-${String(now.getMinutes()).padStart(2,'0')}`;
+
+            const a = document.createElement('a'); 
+            a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); 
+            a.download = `Al_Majmaah_Filtered_Employees_${dateFileName}.csv`; 
+            a.click();
+
+            alert(`📥 Filtered CSV Report Downloaded Successfully!\n\n📊 Exported Records: ${filteredList.length}\n📅 Download Time: ${downloadTime}\n📁 Filename: Al_Majmaah_Filtered_Employees_${dateFileName}.csv`);
         }
     </script>
 </body>
