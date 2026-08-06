@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al Majmaah Project - HR Management System</title>
+    <title>SaaS HR Management System - Multi-Tenant Platform</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- SheetJS for Excel Import/Export -->
@@ -23,15 +23,21 @@
             background-size: cover; background-attachment: fixed; background-position: center;
             color: #0f172a; min-height: 100vh; padding: 15px; padding-bottom: 80px;
         }
-        #login-container { display: flex; justify-content: center; align-items: center; min-height: 85vh; }
+        
+        /* Auth / Login Container */
+        #login-container { display: flex; justify-content: center; align-items: center; min-height: 90vh; }
         .login-card {
-            background: var(--card-bg); backdrop-filter: blur(16px); padding: 30px 20px;
-            border-radius: 24px; box-shadow: 0 20px 40px rgba(14, 165, 233, 0.15);
-            width: 100%; max-width: 420px; text-align: center; border: 1px solid var(--glass-border);
+            background: var(--card-bg); backdrop-filter: blur(16px); padding: 35px 25px;
+            border-radius: 24px; box-shadow: 0 20px 40px rgba(14, 165, 233, 0.2);
+            width: 100%; max-width: 440px; text-align: center; border: 1px solid var(--glass-border);
         }
+        .auth-toggle { display: flex; gap: 8px; margin-bottom: 20px; background: #e0f2fe; padding: 4px; border-radius: 12px; }
+        .auth-toggle button { flex: 1; padding: 8px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; background: transparent; color: #0369a1; transition: all 0.2s; }
+        .auth-toggle button.active { background: white; color: #0284c7; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+
         .logo-preview { width: 80px; height: 80px; border-radius: 20px; object-fit: cover; margin-bottom: 15px; border: 3px solid #0ea5e9; background: #fff; }
         .btn-stylish {
-            background: var(--primary-gradient); color: white; border: none; padding: 12px 20px;
+            background: var(--primary-gradient); color: white; border: none; padding: 10px 18px;
             border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer;
             box-shadow: 0 8px 16px rgba(14, 165, 233, 0.3); transition: all 0.3s ease;
             display: inline-flex; align-items: center; justify-content: center; gap: 6px;
@@ -40,6 +46,8 @@
         .btn-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
         .btn-danger { background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); }
         .btn-purple { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        
         .btn-sm { padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin: 2px; }
         .btn-view { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
         .btn-view:hover { background: #0284c7; color: white; }
@@ -47,6 +55,7 @@
         .btn-del { background: #fee2e2; color: #991b1b; }
         .btn-card { background: #f3e8ff; color: #6b21a8; }
         .btn-wa { background: #dcfce7; color: #15803d; }
+
         #app-container { display: none; max-width: 1400px; margin: 0 auto; }
         
         header {
@@ -56,15 +65,19 @@
         }
         .header-brand { display: flex; align-items: center; gap: 12px; }
         .header-brand img { width: 50px; height: 50px; border-radius: 14px; object-fit: cover; border: 2px solid #0ea5e9; }
-        .header-brand h1 { font-size: 18px; }
+        .header-brand h1 { font-size: 18px; text-transform: uppercase; }
         .customization-panel { background: rgba(255,255,255,0.7); padding: 8px 12px; border-radius: 12px; border: 1px solid #bae6fd; font-size: 11px; font-weight: 600; color: #0369a1; display: flex; gap: 8px; align-items: center; }
         
+        /* Dashboard Stats Grid */
         .stats-grid { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-        .stat-card { background: var(--card-bg); padding: 16px 18px; border-radius: 18px; border: 1px solid var(--glass-border); flex: 1; min-width: 200px; transition: all 0.2s ease; }
-        .stat-card-clickable { cursor: pointer; }
-        .stat-card-clickable:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(225, 29, 72, 0.15); }
-        .stat-card-small { flex: 0.6; min-width: 150px; padding: 12px 16px; }
+        .stat-card { background: var(--card-bg); padding: 16px 18px; border-radius: 18px; border: 1px solid var(--glass-border); flex: 1; min-width: 180px; transition: all 0.2s ease; }
         .stat-card h3 { font-size: 22px; font-weight: 900; }
+        .stat-card p { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 4px; }
+        
+        /* Filter Pills */
+        .pills-container { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; }
+        .pill-btn { background: #fff; border: 1.5px solid #bae6fd; color: #0369a1; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
+        .pill-btn:hover, .pill-btn.active { background: #0284c7; color: #fff; border-color: #0284c7; }
         
         .card-box { background: var(--card-bg); backdrop-filter: blur(16px); padding: 20px; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 20px; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
@@ -73,42 +86,31 @@
         input, select, textarea { background: #fff; border: 2px solid #e0f2fe; padding: 10px 12px; border-radius: 12px; font-size: 13px; outline: none; width: 100%; transition: all 0.2s ease; }
         textarea { resize: vertical; min-height: 42px; }
 
-        input[type="file"] {
-            border: 2px dashed #0ea5e9;
-            background: #f0f9ff;
-            cursor: pointer;
-            padding: 8px;
-        }
-        input[type="file"].drag-over {
-            border-color: #10b981 !important;
-            background: #d1fae5 !important;
-            transform: scale(1.02);
-        }
-        input[type="file"].file-loaded {
-            border-color: #10b981 !important;
-            background: #ecfdf5 !important;
-        }
+        input[type="file"] { border: 2px dashed #0ea5e9; background: #f0f9ff; cursor: pointer; padding: 8px; }
+        input[type="file"].drag-over { border-color: #10b981 !important; background: #d1fae5 !important; transform: scale(1.02); }
+        input[type="file"].file-loaded { border-color: #10b981 !important; background: #ecfdf5 !important; }
 
         .date-input-wrap { position: relative; display: flex; align-items: center; }
         .date-input-wrap input[type="text"] { padding-right: 35px; }
         .date-picker-trigger { position: absolute; right: 10px; cursor: pointer; font-size: 16px; opacity: 0.7; }
-        .date-picker-trigger:hover { opacity: 1; }
         .hidden-date-picker { position: absolute; right: 0; opacity: 0; width: 30px; height: 30px; cursor: pointer; z-index: 5; }
 
         .table-container { overflow-x: auto; border-radius: 16px; border: 1px solid #e2e8f0; background: #fff; -webkit-overflow-scrolling: touch; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; min-width: 650px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; min-width: 750px; }
         th { background: #f0f9ff; padding: 12px 10px; color: #0369a1; font-weight: 800; border-bottom: 2px solid #bae6fd; font-size: 12px; }
         td { padding: 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
         .emp-thumb { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; border: 2px solid #bae6fd; }
+        
+        /* Multi-Level Status & Expiry Badges */
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; }
+        .badge-green { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .badge-warning { background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; }
+        .badge-critical { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .badge-blue { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .badge-purple { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+        
         .doc-link { font-size: 11px; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 6px 12px; border-radius: 8px; text-decoration: none; cursor: pointer; margin-right: 4px; display: inline-block; margin-top: 3px; border: 1px solid #bae6fd; }
-        .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
-        .badge-green { background: #d1fae5; color: #065f46; }
-        .badge-red { background: #fee2e2; color: #991b1b; }
-        .badge-blue { background: #e0f2fe; color: #0369a1; }
         .hidden { display: none !important; }
-
-        .desig-row-clickable { cursor: pointer; transition: background 0.2s ease; }
-        .desig-row-clickable:hover { background: #e0f2fe !important; }
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(6px); justify-content: center; align-items: center; padding: 15px; }
         .id-card-wrap { background: #fff; width: 100%; max-width: 340px; border-radius: 18px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; border: 2px solid #0ea5e9; position: relative; }
@@ -118,16 +120,14 @@
         #qrcode { display: flex; justify-content: center; margin-top: 10px; }
 
         .detail-card-wrap {
-            background: #fff; width: 100%; max-width: 650px; max-height: 85vh; overflow-y: auto;
-            border-radius: 20px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            background: #fff; width: 100%; max-width: 680px; max-height: 88vh; overflow-y: auto;
+            border-radius: 20px; padding: 22px; box-shadow: 0 20px 40px rgba(0,0,0,0.25);
             border: 2px solid #0ea5e9; position: relative; animation: popIn 0.3s ease-out;
         }
-        @keyframes popIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
         .detail-header { display: flex; align-items: center; gap: 14px; border-bottom: 2px solid #e0f2fe; padding-bottom: 14px; margin-bottom: 15px; }
-        .detail-header img { width: 65px; height: 65px; border-radius: 16px; object-fit: cover; border: 3px solid #0ea5e9; }
+        .detail-header img { width: 70px; height: 70px; border-radius: 16px; object-fit: cover; border: 3px solid #0ea5e9; }
         .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 15px; }
         .detail-item { background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; }
         .detail-item span { display: block; font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
@@ -141,7 +141,6 @@
             box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 1px solid #334155;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .doc-viewer-wrap img { max-width: 100%; max-height: 70vh; border-radius: 10px; object-fit: contain; }
 
         .footer-credits {
             text-align: center; margin-top: 25px; padding: 12px;
@@ -152,91 +151,108 @@
         }
         .footer-credits a { color: #059669; text-decoration: none; background: #dcfce7; padding: 4px 10px; border-radius: 8px; border: 1px solid #6ee7b7; }
 
-        @media (max-width: 600px) {
-            body { padding: 10px; padding-bottom: 60px; }
-            header { flex-direction: column; align-items: stretch; text-align: center; gap: 12px; }
-            .header-brand { justify-content: center; }
-            .header-brand h1 { font-size: 16px; }
-            .form-grid { grid-template-columns: 1fr !important; }
-            .field-group[style*="span 2"] { grid-column: span 1 !important; }
-            .stats-grid { flex-direction: column; }
-            .stat-card { width: 100%; }
-            .detail-grid { grid-template-columns: 1fr !important; }
-            .detail-header { flex-direction: column; text-align: center; }
-            .btn-stylish { width: 100%; }
-            #search-input { max-width: 100% !important; }
-            .table-controls-wrap { flex-direction: column; width: 100% !important; max-width: 100% !important; }
+        /* Printable Profile Summary Styles */
+        @media print {
+            body * { visibility: hidden; }
+            #printable-summary, #printable-summary * { visibility: visible; }
+            #printable-summary { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; }
         }
     </style>
 </head>
 <body id="main-body">
 
-    <!-- Login Container -->
+    <!-- Auth / Login Container (SaaS Multi-Tenant Authentication) -->
     <div id="login-container">
         <div class="login-card">
             <img id="login-logo-preview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="logo-preview" alt="Logo">
-            <h2 style="color: #0369a1; font-size: 20px; margin-bottom: 20px;">🏢 HR Portal Login</h2>
-            <form id="login-form" onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 12px;" autocomplete="off">
-                <input type="text" id="login-user" placeholder="Username" required autocomplete="off">
-                <input type="password" id="login-pass" placeholder="Password" required autocomplete="new-password">
-                <button type="submit" class="btn-stylish" style="width: 100%;">🚀 Login</button>
+            
+            <div class="auth-toggle">
+                <button id="btn-tab-login" class="active" onclick="switchAuthTab('login')">🔑 Sign In</button>
+                <button id="btn-tab-signup" onclick="switchAuthTab('signup')">✨ Register SaaS Tenant</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" onsubmit="handleAuthLogin(event)" style="display: flex; flex-direction: column; gap: 12px;" autocomplete="off">
+                <input type="email" id="login-email" placeholder="Tenant Email Address" required autocomplete="off">
+                <input type="password" id="login-pass" placeholder="Password" required autocomplete="current-password">
+                <button type="submit" class="btn-stylish" style="width: 100%;">🚀 Login to Portal</button>
+            </form>
+
+            <!-- Sign Up Form (Multi-Tenant SaaS Registration) -->
+            <form id="signup-form" class="hidden" onsubmit="handleAuthSignUp(event)" style="display: flex; flex-direction: column; gap: 12px;" autocomplete="off">
+                <input type="text" id="signup-project" placeholder="Company / Project Name (e.g. Al Majmaah)" required autocomplete="off">
+                <input type="email" id="signup-email" placeholder="Email Address" required autocomplete="off">
+                <input type="password" id="signup-pass" placeholder="Password (Min 6 chars)" required minlength="6" autocomplete="new-password">
+                <button type="submit" class="btn-stylish btn-success" style="width: 100%;">🏢 Create Dedicated Workspace</button>
             </form>
         </div>
     </div>
 
-    <!-- Main Dashboard -->
+    <!-- Main SaaS App Dashboard -->
     <div id="app-container">
         <header>
             <div class="header-brand">
                 <img id="header-logo-preview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Logo">
                 <div>
-                    <h1>AL MAJMAAH PROJECT</h1>
-                    <p>Enterprise HR Directory <span id="user-role-badge" class="badge badge-green">ADMIN</span></p>
+                    <h1 id="header-project-title">PROJECT DASHBOARD</h1>
+                    <p>SaaS HR Management System <span id="user-role-badge" class="badge badge-green">TENANT ADMIN</span></p>
                 </div>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: center;">
                 <button onclick="openDesignationModal()" class="btn-stylish btn-purple">📊 Designation Breakdown</button>
-                <div class="customization-panel admin-only">
+                <div class="customization-panel">
                     <span>🖼️ BG:</span>
                     <input type="file" accept="image/*" onchange="uploadCustomBackground(event)" style="display:none;" id="bg-input">
                     <label for="bg-input" style="color: #0284c7; cursor: pointer; text-decoration: underline;">Change</label>
                 </div>
-                <div class="customization-panel admin-only">
+                <div class="customization-panel">
                     <span>🏢 Logo:</span>
                     <input type="file" accept="image/*" onchange="uploadSystemLogo(event)" style="display:none;" id="header-logo-input">
                     <label for="header-logo-input" style="color: #0284c7; cursor: pointer; text-decoration: underline;">Change</label>
                 </div>
-                <div class="customization-panel admin-only">
+                <div class="customization-panel">
                     <span>📂 Excel:</span>
                     <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" onchange="importFromExcel(event)" style="display:none;">
                     <label for="excel-file-input" style="color: #0284c7; cursor: pointer; text-decoration: underline;">Import / Sync</label>
                 </div>
-                <button onclick="exportToCSV()" class="btn-stylish btn-success" title="Download Entire Employee Database">📥 All CSV Export</button>
-                <button id="admin-reset-btn" onclick="clearAllData()" class="btn-stylish btn-danger admin-only">🗑️ Reset</button>
+                
+                <!-- JSON Backup & Restore -->
+                <button onclick="exportJSONBackup()" class="btn-stylish btn-warning" title="Backup all records to JSON file">💾 JSON Backup</button>
+                <input type="file" id="json-restore-input" accept=".json" onchange="restoreJSONBackup(event)" style="display:none;">
+                <label for="json-restore-input" class="btn-stylish" style="background: #475569; cursor: pointer;">📂 JSON Restore</label>
+
+                <button onclick="exportToCSV()" class="btn-stylish btn-success" title="Download Entire Employee Database">📥 All CSV</button>
+                <button id="admin-reset-btn" onclick="clearAllData()" class="btn-stylish btn-danger">🗑️ Reset</button>
                 <button onclick="handleLogout()" class="btn-stylish" style="background: #64748b;">🚪 Logout</button>
             </div>
         </header>
 
-        <!-- Stats Grid -->
+        <!-- Enhanced Analytics Dashboard -->
         <div class="stats-grid">
-            <div class="stat-card" onclick="resetSearchFilter()" style="cursor: pointer;">
-                <p style="font-size: 11px; color: #64748b; font-weight: 700;">TOTAL WORKFORCE (Show All)</p>
-                <h3 id="total-employees" style="color: #0284c7;">0</h3>
+            <div class="stat-card" onclick="setPillFilter('all')" style="cursor: pointer;">
+                <p>TOTAL WORKFORCE</p>
+                <h3 id="stat-total" style="color: #0284c7;">0</h3>
             </div>
-            
-            <div class="stat-card stat-card-clickable" onclick="toggleExpiredFilter()" id="alert-card-box">
-                <p style="font-size: 11px; color: #e11d48; font-weight: 800;">DOCUMENT ALERTS 🔍 (Click to Filter)</p>
-                <h3 id="expiring-count" style="color: #e11d48;">0</h3>
+            <div class="stat-card" onclick="setPillFilter('Active')" style="cursor: pointer;">
+                <p>ACTIVE STAFF 🟢</p>
+                <h3 id="stat-active" style="color: #059669;">0</h3>
             </div>
-
-            <div class="stat-card stat-card-small">
-                <p style="font-size: 10px; color: #64748b; font-weight: 700;">SALARY BUDGET</p>
-                <h3 id="total-salary" style="color: #059669;">0 SAR</h3>
+            <div class="stat-card">
+                <p>NATIONALITIES 🌍</p>
+                <h3 id="stat-nationalities" style="color: #8b5cf6;">0</h3>
+            </div>
+            <div class="stat-card">
+                <p>AVG SALARY (SAR)</p>
+                <h3 id="stat-avg-salary" style="color: #d97706;">0</h3>
+            </div>
+            <div class="stat-card" onclick="setPillFilter('alerts')" style="cursor: pointer;">
+                <p>DOCUMENT ALERTS 🔍</p>
+                <h3 id="stat-alerts" style="color: #e11d48;">0</h3>
             </div>
         </div>
 
         <!-- Form Box -->
-        <div class="card-box admin-only">
+        <div class="card-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                 <h2 id="form-title" style="font-size: 16px;">✨ Add New Employee Profile & Documents</h2>
                 <button type="button" onclick="resetFormState()" class="btn-stylish" style="padding: 6px 14px; font-size: 12px; background: #0284c7; width: auto;">➕ Add New Employee</button>
@@ -247,6 +263,16 @@
                 <div class="field-group"><label>Employee Photo (Drag / Paste Image)</label><input type="file" id="photo" accept="image/*" onchange="handleFileRead(event, 'photo')" data-key="photo"></div>
                 <div class="field-group"><label>Employee ID *</label><input type="text" id="empId" placeholder="EMP-101" required autocomplete="off"></div>
                 <div class="field-group"><label>Full Name *</label><input type="text" id="empName" placeholder="Full Name" required autocomplete="off"></div>
+
+                <!-- Employment Status Option -->
+                <div class="field-group">
+                    <label style="color: #0284c7;">Employment Status *</label>
+                    <select id="empStatus" style="font-weight: 700; border-color: #0284c7;">
+                        <option value="Active">Active 🟢</option>
+                        <option value="On Leave">On Leave 🟠</option>
+                        <option value="Resigned/Terminated">Resigned / Terminated 🔴</option>
+                    </select>
+                </div>
 
                 <div class="field-group">
                     <label>Nationality</label>
@@ -292,7 +318,7 @@
                     <input type="text" id="customDesignation" placeholder="Type custom designation..." autocomplete="off">
                 </div>
 
-                <div class="field-group"><label>Project / Site</label><input type="text" id="project" value="Al Majmaah Main Site" autocomplete="off"></div>
+                <div class="field-group"><label>Project / Site</label><input type="text" id="project" value="Main Site" autocomplete="off"></div>
                 <div class="field-group"><label>Mobile Number</label><input type="tel" id="mobile" placeholder="966XXXXXXXXX" autocomplete="off"></div>
 
                 <div class="field-group"><label>Iqama Number</label><input type="text" id="iqama" placeholder="Iqama No" autocomplete="off"></div>
@@ -359,20 +385,43 @@
                 <div class="field-group" style="grid-column: span 2;"><label style="color: #e11d48;">Reason for Leaving</label><input type="text" id="leavingReason" placeholder="Reason for leaving / Termination details..." autocomplete="off"></div>
                 <div class="field-group"><label style="color: #e11d48;">Reason Paper (Image / PDF)</label><input type="file" id="reasonPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'reasonPic')" data-key="reasonPic"></div>
 
-                <button type="submit" id="save-btn" class="btn-stylish btn-success" style="grid-column: 1 / -1; margin-top: 15px;">💾 Save Employee Record to Cloud</button>
+                <button type="submit" id="save-btn" class="btn-stylish btn-success" style="grid-column: 1 / -1; margin-top: 15px;">💾 Save Employee Record to SaaS Database</button>
             </form>
         </div>
 
-        <!-- Table Box -->
+        <!-- Status Filter Pills & Advanced Sorting controls -->
         <div class="card-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="font-size: 16px;" id="table-heading">📋 Employee Directory</h2>
-                <div class="table-controls-wrap" style="display: flex; gap: 8px; align-items: center; width: 100%; max-width: 520px;">
-                    <input type="text" id="search-input" onkeyup="handleManualSearchInput()" placeholder="🔍 Search ID, Designation, Name..." style="flex: 1;">
-                    <button onclick="resetSearchFilter()" class="btn-stylish" style="padding: 8px 12px; font-size: 11px; background: #64748b; width: auto;">Reset</button>
-                    <button onclick="exportFilteredToCSV()" class="btn-stylish btn-success" style="padding: 8px 12px; font-size: 11px; width: auto;" title="Export only filtered list">📥 Filtered CSV</button>
+                
+                <!-- Advanced Table Sorting -->
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <select id="sort-select" onchange="renderData()" style="padding: 8px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; width: auto; border: 2px solid #bae6fd;">
+                        <option value="id-asc">Sort: Emp ID (Asc)</option>
+                        <option value="id-desc">Sort: Emp ID (Desc)</option>
+                        <option value="name-asc">Sort: Name (A-Z)</option>
+                        <option value="name-desc">Sort: Name (Z-A)</option>
+                        <option value="salary-high">Sort: Salary (High → Low)</option>
+                        <option value="salary-low">Sort: Salary (Low → High)</option>
+                        <option value="expiry-near">Sort: Nearest Expiry Date ⚠️</option>
+                    </select>
+
+                    <div style="display: flex; gap: 8px; align-items: center; max-width: 380px;">
+                        <input type="text" id="search-input" onkeyup="handleManualSearchInput()" placeholder="🔍 Search ID, Designation, Name..." style="flex: 1;">
+                        <button onclick="resetSearchFilter()" class="btn-stylish" style="padding: 8px 12px; font-size: 11px; background: #64748b; width: auto;">Reset</button>
+                    </div>
                 </div>
             </div>
+
+            <!-- Filter Pills Bar -->
+            <div class="pills-container">
+                <button class="pill-btn active" id="pill-all" onclick="setPillFilter('all')">🌐 All Employees</button>
+                <button class="pill-btn" id="pill-active" onclick="setPillFilter('Active')">🟢 Active</button>
+                <button class="pill-btn" id="pill-leave" onclick="setPillFilter('On Leave')">🟠 On Leave</button>
+                <button class="pill-btn" id="pill-resigned" onclick="setPillFilter('Resigned/Terminated')">🔴 Resigned/Terminated</button>
+                <button class="pill-btn" id="pill-alerts" onclick="setPillFilter('alerts')">⚠️ Expiry Alerts</button>
+            </div>
+
             <div class="table-container">
                 <table>
                     <thead>
@@ -380,6 +429,7 @@
                             <th>Photo</th>
                             <th>Emp ID</th>
                             <th>Name</th>
+                            <th>Status</th>
                             <th>Designation</th>
                             <th>Project</th>
                             <th>Mobile</th>
@@ -402,44 +452,53 @@
     <div id="detail-modal" class="modal">
         <div class="detail-card-wrap">
             <button class="close-popup-btn" onclick="closeDetailModal()">&times;</button>
-            <div class="detail-header">
-                <img id="pop-photo" src="" alt="Photo">
-                <div>
-                    <h3 id="pop-name" style="font-size: 18px; color: #0f172a;">-</h3>
-                    <p id="pop-desig" style="color: #0284c7; font-size: 13px; font-weight: 700;">-</p>
-                    <span id="pop-id" class="badge badge-green" style="margin-top: 5px;">-</span>
+            
+            <div id="printable-summary">
+                <div class="detail-header">
+                    <img id="pop-photo" src="" alt="Photo">
+                    <div>
+                        <h3 id="pop-name" style="font-size: 18px; color: #0f172a;">-</h3>
+                        <p id="pop-desig" style="color: #0284c7; font-size: 13px; font-weight: 700;">-</p>
+                        <div style="display:flex; gap:6px; margin-top:5px;">
+                            <span id="pop-id" class="badge badge-green">-</span>
+                            <span id="pop-status-badge" class="badge badge-blue">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-item" style="grid-column: span 2; background: #e0f2fe; border-color: #bae6fd;">
+                        <span style="color: #0369a1;">📅 Uploaded Date & Time</span>
+                        <p id="pop-uploaded-at" style="color: #0284c7; font-size: 13px;">-</p>
+                    </div>
+                    <div class="detail-item"><span>Nationality</span><p id="pop-nat">-</p></div>
+                    <div class="detail-item"><span>Project / Site</span><p id="pop-project">-</p></div>
+                    <div class="detail-item"><span>Mobile Number</span><p id="pop-mobile">-</p></div>
+                    <div class="detail-item"><span>Salary & Bank</span><p id="pop-salary">-</p></div>
+                    <div class="detail-item"><span>Start Working Date</span><p id="pop-start-date">-</p></div>
+                    <div class="detail-item"><span>Last Working Date</span><p id="pop-last-date">-</p></div>
+                    <div class="detail-item" style="grid-column: span 2;"><span>Reason for Leaving</span><p id="pop-reason">-</p></div>
+                    <div class="detail-item"><span>Iqama Details</span><p id="pop-iqama">-</p></div>
+                    <div class="detail-item"><span>Passport Details</span><p id="pop-passport">-</p></div>
+                    <div class="detail-item"><span>SCFHS Expiry</span><p id="pop-scfhs">-</p></div>
+                    <div class="detail-item"><span>Emergency Contact</span><p id="pop-emergency">-</p></div>
                 </div>
             </div>
 
-            <div class="detail-grid">
-                <div class="detail-item" style="grid-column: span 2; background: #e0f2fe; border-color: #bae6fd;">
-                    <span style="color: #0369a1;">📅 Uploaded Date & Time</span>
-                    <p id="pop-uploaded-at" style="color: #0284c7; font-size: 13px;">-</p>
-                </div>
-                <div class="detail-item"><span>Nationality</span><p id="pop-nat">-</p></div>
-                <div class="detail-item"><span>Project / Site</span><p id="pop-project">-</p></div>
-                <div class="detail-item"><span>Mobile Number</span><p id="pop-mobile">-</p></div>
-                <div class="detail-item"><span>Salary & Bank</span><p id="pop-salary">-</p></div>
-                <div class="detail-item"><span>Start Working Date</span><p id="pop-start-date">-</p></div>
-                <div class="detail-item"><span>Last Working Date</span><p id="pop-last-date">-</p></div>
-                <div class="detail-item" style="grid-column: span 2;"><span>Reason for Leaving</span><p id="pop-reason">-</p></div>
-                <div class="detail-item"><span>Iqama Details</span><p id="pop-iqama">-</p></div>
-                <div class="detail-item"><span>Passport Details</span><p id="pop-passport">-</p></div>
-                <div class="detail-item"><span>SCFHS Expiry</span><p id="pop-scfhs">-</p></div>
-                <div class="detail-item"><span>Emergency Contact</span><p id="pop-emergency">-</p></div>
-            </div>
-
-            <div style="background: #f1f5f9; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <div style="background: #f1f5f9; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
                 <span style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 8px;">Attached Documents</span>
                 <div id="pop-docs" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
             </div>
+
+            <!-- Print Printable Staff Summary Action Button -->
+            <button onclick="window.print()" class="btn-stylish btn-success" style="width: 100%;">🖨️ Print Printable Staff Summary (PDF)</button>
         </div>
     </div>
 
     <div id="id-card-modal" class="modal">
         <div class="id-card-wrap">
             <div class="id-card-header">
-                <h3 style="font-size: 14px;">AL MAJMAAH PROJECT</h3>
+                <h3 id="card-header-title" style="font-size: 14px; text-transform:uppercase;">PROJECT WORKER</h3>
                 <p style="font-size: 10px;">OFFICIAL IDENTIFICATION CARD</p>
             </div>
             <img id="card-photo" class="id-card-photo" src="" alt="Photo">
@@ -452,7 +511,7 @@
             </div>
             <div id="qrcode"></div>
             <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
-                <button onclick="window.print()" class="btn-stylish btn-success" style="padding: 6px 12px; font-size: 11px; width: auto;">🖨️ Print</button>
+                <button onclick="window.print()" class="btn-stylish btn-success" style="padding: 6px 12px; font-size: 11px; width: auto;">🖨️ Print Card</button>
                 <button onclick="closeModal()" class="btn-stylish btn-danger" style="padding: 6px 12px; font-size: 11px; width: auto;">❌ Close</button>
             </div>
         </div>
@@ -488,14 +547,14 @@
                         <option value="current">⚡ Current Live Data</option>
                     </select>
                 </div>
-                <button onclick="saveCurrentMonthSnapshot()" class="btn-stylish btn-success admin-only" style="padding: 8px 14px; font-size: 12px; width: auto;">💾 Save This Month Snapshot</button>
+                <button onclick="saveCurrentMonthSnapshot()" class="btn-stylish btn-success" style="padding: 8px 14px; font-size: 12px; width: auto;">💾 Save Snapshot</button>
             </div>
 
             <div class="table-container" style="max-height: 400px; overflow-y: auto;">
                 <table>
                     <thead>
                         <tr>
-                            <th>Designation (Click to Filter)</th>
+                            <th>Designation</th>
                             <th>Total Staff</th>
                             <th>Percentage (%)</th>
                         </tr>
@@ -519,10 +578,11 @@
         }
     </script>
 
-    <!-- Firebase SDK & Sync Logic -->
+    <!-- Firebase SDK & Multi-Tenant SaaS Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, writeBatch, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, writeBatch, getDocs, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyC33ueoEDhQ-5vGw56KqBWXb1T6TUqBOzc",
@@ -535,36 +595,106 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
-        const empCollection = collection(db, "employees");
-        const historyCollection = collection(db, "monthly_history");
 
         window.employees = [];
         window.monthlySnapshots = {};
-        window.userRole = 'viewer';
+        window.currentTenantUser = null;
+        window.tenantProjectName = "SaaS HR Portal";
         window.currentFiles = { photo: "", iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "", reasonPic: "" };
+        
+        let empUnsubscribe = null;
+        let historyUnsubscribe = null;
 
-        onSnapshot(empCollection, (snapshot) => {
-            window.employees = [];
-            snapshot.forEach(docSnap => {
-                window.employees.push({ firestoreId: docSnap.id, ...docSnap.data() });
-            });
-            renderData();
+        // Firebase Auth State Listener
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                window.currentTenantUser = user;
+                
+                // Fetch Tenant Profile Info
+                const userDoc = await getDoc(doc(db, "tenants", user.uid));
+                if (userDoc.exists()) {
+                    window.tenantProjectName = userDoc.data().projectName || "HR Project";
+                }
+                
+                document.getElementById('header-project-title').innerText = window.tenantProjectName;
+                document.getElementById('card-header-title').innerText = window.tenantProjectName;
+                
+                // Connect to Multi-Tenant Isolated Collection: tenants/{uid}/employees
+                const empCollection = collection(db, "tenants", user.uid, "employees");
+                const historyCollection = collection(db, "tenants", user.uid, "monthly_history");
+
+                if (empUnsubscribe) empUnsubscribe();
+                empUnsubscribe = onSnapshot(empCollection, (snapshot) => {
+                    window.employees = [];
+                    snapshot.forEach(docSnap => {
+                        window.employees.push({ firestoreId: docSnap.id, ...docSnap.data() });
+                    });
+                    renderData();
+                });
+
+                if (historyUnsubscribe) historyUnsubscribe();
+                historyUnsubscribe = onSnapshot(historyCollection, (snapshot) => {
+                    window.monthlySnapshots = {};
+                    const select = document.getElementById('history-month-select');
+                    select.innerHTML = '<option value="current">⚡ Current Live Data</option>';
+
+                    snapshot.forEach(docSnap => {
+                        const data = docSnap.data();
+                        window.monthlySnapshots[docSnap.id] = data;
+                        select.innerHTML += `<option value="${docSnap.id}">📅 ${data.monthYear}</option>`;
+                    });
+                });
+
+                showDashboard();
+            } else {
+                window.currentTenantUser = null;
+                document.getElementById('app-container').style.display = 'none';
+                document.getElementById('login-container').style.display = 'flex';
+            }
         });
 
-        onSnapshot(historyCollection, (snapshot) => {
-            window.monthlySnapshots = {};
-            const select = document.getElementById('history-month-select');
-            select.innerHTML = '<option value="current">⚡ Current Live Data</option>';
+        // SaaS Sign Up Handler
+        window.handleAuthSignUp = async function(e) {
+            e.preventDefault();
+            const project = document.getElementById('signup-project').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const pass = document.getElementById('signup-pass').value.trim();
 
-            snapshot.forEach(docSnap => {
-                const data = docSnap.data();
-                window.monthlySnapshots[docSnap.id] = data;
-                select.innerHTML += `<option value="${docSnap.id}">📅 ${data.monthYear}</option>`;
-            });
-        });
+            try {
+                const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+                await setDoc(doc(db, "tenants", userCred.user.uid), {
+                    projectName: project,
+                    email: email,
+                    createdAt: new Date().toISOString()
+                });
+                alert(`🎉 Workspace '${project}' registered successfully!`);
+            } catch (err) {
+                alert("❌ Registration Error: " + err.message);
+            }
+        };
 
+        // SaaS Login Handler
+        window.handleAuthLogin = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (err) {
+                alert("❌ Login Failed: " + err.message);
+            }
+        };
+
+        window.handleLogout = function() {
+            signOut(auth);
+        };
+
+        // Snapshot Saver
         window.saveCurrentMonthSnapshot = async function() {
+            if (!window.currentTenantUser) return;
             const now = new Date();
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             const monthYear = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
@@ -584,8 +714,8 @@
             };
 
             try {
-                await setDoc(doc(db, "monthly_history", docId), snapshotData);
-                alert(`✅ Snapshot saved successfully for ${monthYear}!`);
+                await setDoc(doc(db, "tenants", window.currentTenantUser.uid, "monthly_history", docId), snapshotData);
+                alert(`✅ Snapshot saved for ${monthYear}!`);
             } catch (err) {
                 alert("Error saving snapshot: " + err.message);
             }
@@ -594,12 +724,15 @@
         // FORM SUBMIT HANDLER
         document.getElementById('employee-form').addEventListener('submit', async function(e) {
             e.preventDefault();
+            if (!window.currentTenantUser) return alert("Please log in again!");
+            
             const editDocId = document.getElementById('edit-doc-id').value;
             const empIdVal = document.getElementById('empId').value.trim();
 
+            // Strict Unique ID Restriction
             const duplicate = window.employees.find(e => String(e.id).toLowerCase() === empIdVal.toLowerCase() && e.firestoreId !== editDocId);
             if (duplicate) {
-                return alert(`⚠️ Employee with ID (${empIdVal}) already exists!`);
+                return alert(`⚠️ Employee with ID (${empIdVal}) already exists! Duplicate entry prohibited.`);
             }
 
             const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
@@ -615,6 +748,7 @@
 
             const newEmp = {
                 uploadedAt: uploadTime,
+                status: document.getElementById('empStatus').value || 'Active',
                 photo: window.currentFiles.photo || existingEmp.photo || defaultAvatar,
                 iqamaPic: window.currentFiles.iqamaPic || existingEmp.iqamaPic || "",
                 passportPic: window.currentFiles.passportPic || existingEmp.passportPic || "",
@@ -640,12 +774,14 @@
                 emergency: document.getElementById('emergency').value || 'N/A'
             };
 
+            const empColl = collection(db, "tenants", window.currentTenantUser.uid, "employees");
+
             try {
                 if (editDocId) {
-                    await updateDoc(doc(db, "employees", editDocId), newEmp);
+                    await updateDoc(doc(db, "tenants", window.currentTenantUser.uid, "employees", editDocId), newEmp);
                     alert("✅ Employee record updated successfully!");
                 } else {
-                    await addDoc(empCollection, newEmp);
+                    await addDoc(empColl, newEmp);
                     alert(`✅ New employee saved successfully!`);
                 }
                 resetFormState();
@@ -657,7 +793,7 @@
         window.deleteEmployee = async function(firestoreId) {
             if (confirm("Are you sure you want to delete this employee?")) {
                 try {
-                    await deleteDoc(doc(db, "employees", firestoreId));
+                    await deleteDoc(doc(db, "tenants", window.currentTenantUser.uid, "employees", firestoreId));
                 } catch (e) {
                     alert("Error: " + e.message);
                 }
@@ -665,9 +801,10 @@
         };
 
         window.clearAllData = async function() {
-            if (confirm("⚠️ WARNING: Delete ALL employee records permanently from Firebase?")) {
+            if (confirm("⚠️ WARNING: Delete ALL employee records permanently?")) {
                 try {
-                    const snapshot = await getDocs(empCollection);
+                    const empColl = collection(db, "tenants", window.currentTenantUser.uid, "employees");
+                    const snapshot = await getDocs(empColl);
                     const batch = writeBatch(db);
                     snapshot.forEach(docSnap => batch.delete(docSnap.ref));
                     await batch.commit();
@@ -678,10 +815,45 @@
             }
         };
 
+        // JSON Backup & Restore Functions
+        window.exportJSONBackup = function() {
+            if (!window.employees || window.employees.length === 0) return alert('No employee data to backup!');
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.employees, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `HR_Backup_${window.tenantProjectName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.json`);
+            dlAnchor.click();
+        };
+
+        window.restoreJSONBackup = async function(event) {
+            const file = event.target.files[0];
+            if (!file || !window.currentTenantUser) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const importedList = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedList)) return alert("Invalid JSON backup format!");
+
+                    let count = 0;
+                    for (let item of importedList) {
+                        delete item.firestoreId; // Strip old Firestore ID
+                        const empColl = collection(db, "tenants", window.currentTenantUser.uid, "employees");
+                        await addDoc(empColl, item);
+                        count++;
+                    }
+                    alert(`🎉 Successfully restored ${count} employee records from JSON backup!`);
+                } catch (err) {
+                    alert("❌ Backup Restore Error: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+        };
+
         // EXCEL IMPORT WITH AUTOMATIC UPDATE/SYNC LOGIC
         window.importFromExcel = function(event) {
             const file = event.target ? event.target.files[0] : event;
-            if (!file) return;
+            if (!file || !window.currentTenantUser) return;
 
             const reader = new FileReader();
             reader.onload = async function(e) {
@@ -691,31 +863,27 @@
                     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     const excelData = XLSX.utils.sheet_to_json(worksheet);
 
-                    if (!excelData || excelData.length === 0) {
-                        return alert("⚠️ Excel sheet is empty or invalid format!");
-                    }
+                    if (!excelData || excelData.length === 0) return alert("⚠️ Excel sheet is empty!");
 
-                    let addedCount = 0;
-                    let updatedCount = 0;
+                    let addedCount = 0, updatedCount = 0;
                     const batchUploadTime = getCurrentFormattedDateTime();
+                    const empColl = collection(db, "tenants", window.currentTenantUser.uid, "employees");
 
                     for (let row of excelData) {
                         const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
-                        
                         const rawId = row["ID"] || row["Emp ID"] || row["Employee ID"] || `EMP-${Math.floor(Math.random()*1000)}`;
                         const id = String(rawId).trim();
-                        const name = String(row["Name"] || row["Full Name"] || "N/A").trim();
-
                         if (!id) continue;
 
                         const existingEmp = (window.employees || []).find(emp => String(emp.id).toLowerCase() === id.toLowerCase());
 
                         const empPayload = {
                             id: id,
-                            name: name,
+                            name: String(row["Name"] || row["Full Name"] || "N/A").trim(),
+                            status: String(row["Status"] || existingEmp?.status || "Active"),
                             nationality: String(row["Nationality"] || existingEmp?.nationality || "Other"),
                             designation: String(row["Designation"] || existingEmp?.designation || "Other"),
-                            project: String(row["Project"] || existingEmp?.project || "Al Majmaah Main Site"),
+                            project: String(row["Project"] || existingEmp?.project || "Main Site"),
                             mobile: String(row["Mobile"] || row["Mobile Number"] || existingEmp?.mobile || ""),
                             startDate: formatDateStandard(row["Start Date"] || row["StartDate"] || existingEmp?.startDate || ""),
                             lastDate: formatDateStandard(row["Last Date"] || row["LastDate"] || existingEmp?.lastDate || ""),
@@ -731,10 +899,10 @@
                         };
 
                         if (existingEmp) {
-                            await updateDoc(doc(db, "employees", existingEmp.firestoreId), empPayload);
+                            await updateDoc(doc(db, "tenants", window.currentTenantUser.uid, "employees", existingEmp.firestoreId), empPayload);
                             updatedCount++;
                         } else {
-                            await addDoc(empCollection, {
+                            await addDoc(empColl, {
                                 ...empPayload,
                                 uploadedAt: batchUploadTime,
                                 photo: defaultAvatar,
@@ -744,72 +912,62 @@
                         }
                     }
 
-                    alert(`🔄 Excel Sync Successful!\n\n✨ New Added: ${addedCount} Employees\n✏️ Updated Records: ${updatedCount} Employees\n📅 Timestamp: ${batchUploadTime}`);
-
+                    alert(`🔄 Excel Sync Complete!\n\n✨ New Added: ${addedCount}\n✏️ Updated: ${updatedCount}`);
                 } catch (err) {
                     alert("❌ Excel Upload Error: " + err.message);
-                } finally {
-                    if (event.target) event.target.value = '';
                 }
             };
-
             reader.readAsArrayBuffer(file);
         };
     </script>
 
     <script>
-        let showOnlyExpired = false;
+        let currentPillFilter = 'all';
         let lastFocusedFileInput = null;
         window.activeDesignationFilter = null;
 
         window.onload = function() {
             loadSavedCustomizations();
-            if(localStorage.getItem('al_majmaah_logged') === 'true') {
-                window.userRole = localStorage.getItem('al_majmaah_role') || 'viewer';
-                showDashboard();
-            }
             initDragDropAndPaste();
         };
 
+        function switchAuthTab(tab) {
+            document.getElementById('btn-tab-login').classList.toggle('active', tab === 'login');
+            document.getElementById('btn-tab-signup').classList.toggle('active', tab === 'signup');
+            document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+            document.getElementById('signup-form').classList.toggle('hidden', tab !== 'signup');
+        }
+
+        function showDashboard() {
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            renderData();
+        }
+
         function initDragDropAndPaste() {
             const fileInputs = document.querySelectorAll('input[type="file"]');
-
             fileInputs.forEach(input => {
                 input.addEventListener('focus', () => lastFocusedFileInput = input);
                 input.addEventListener('click', () => lastFocusedFileInput = input);
-
-                input.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    input.classList.add('drag-over');
-                });
-
-                input.addEventListener('dragleave', () => {
-                    input.classList.remove('drag-over');
-                });
-
+                input.addEventListener('dragover', (e) => { e.preventDefault(); input.classList.add('drag-over'); });
+                input.addEventListener('dragleave', () => input.classList.remove('drag-over'));
                 input.addEventListener('drop', (e) => {
                     e.preventDefault();
                     input.classList.remove('drag-over');
-                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                        processFile(e.dataTransfer.files[0], input);
-                    }
+                    if (e.dataTransfer.files && e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0], input);
                 });
             });
 
             document.addEventListener('paste', (e) => {
                 const items = (e.clipboardData || e.originalEvent.clipboardData).items;
                 let file = null;
-
                 for (let item of items) {
                     if (item.type.indexOf('image') !== -1 || item.type === 'application/pdf') {
-                        file = item.getAsFile();
-                        break;
+                        file = item.getAsFile(); break;
                     }
                 }
-
                 if (file) {
-                    let targetInput = lastFocusedFileInput;
-                    if (!targetInput) targetInput = document.getElementById('photo');
+                    let targetInput = lastFocusedFileInput || document.getElementById('photo');
                     if (targetInput) processFile(file, targetInput);
                 }
             });
@@ -821,7 +979,6 @@
 
             reader.onload = function(e) {
                 const dataUrl = e.target.result;
-
                 if (key && window.currentFiles) {
                     window.currentFiles[key] = dataUrl;
                     inputElem.classList.add('file-loaded');
@@ -831,16 +988,9 @@
                 } else if (inputElem.id === 'header-logo-input') {
                     localStorage.setItem('al_majmaah_custom_logo', dataUrl);
                     loadSavedCustomizations();
-                } else if (inputElem.id === 'excel-file-input') {
-                    window.importFromExcel(file);
                 }
             };
-
-            if (inputElem.id === 'excel-file-input') {
-                window.importFromExcel(file);
-            } else {
-                reader.readAsDataURL(file);
-            }
+            reader.readAsDataURL(file);
         }
 
         function syncDatePicker(inputId, selectedVal) {
@@ -858,37 +1008,6 @@
                 }
             }
             return dateStr;
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const u = document.getElementById('login-user').value.trim();
-            const p = document.getElementById('login-pass').value.trim();
-
-            if (u === 'admin' && p === 'Almajmaa123') { window.userRole = 'admin'; } 
-            else if (u === 'user' && p === 'user123') { window.userRole = 'viewer'; } 
-            else { return alert("Invalid Username or Password!"); }
-
-            localStorage.setItem('al_majmaah_logged', 'true');
-            localStorage.setItem('al_majmaah_role', window.userRole);
-            showDashboard();
-        }
-
-        function handleLogout() {
-            localStorage.removeItem('al_majmaah_logged');
-            location.reload();
-        }
-
-        function showDashboard() {
-            document.getElementById('login-container').style.display = 'none';
-            document.getElementById('app-container').style.display = 'block';
-            document.getElementById('user-role-badge').innerText = window.userRole.toUpperCase();
-
-            if (window.userRole !== 'admin') {
-                document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
-            }
-
-            renderData();
         }
 
         function handleFileRead(event, key) {
@@ -917,144 +1036,154 @@
 
         function handleNationalityChange() {
             const nat = document.getElementById('nationality').value;
-            const box = document.getElementById('custom-nationality-box');
-            if (nat === 'Other') box.classList.remove('hidden');
-            else box.classList.add('hidden');
+            document.getElementById('custom-nationality-box').classList.toggle('hidden', nat !== 'Other');
         }
 
         function handleDesignationChange() {
             const desig = document.getElementById('designation').value;
-            const scfhsBox = document.getElementById('scfhs-box');
-            const scfhsPicBox = document.getElementById('scfhs-pic-box');
-            const customBox = document.getElementById('custom-desig-box');
-
-            if (desig.includes('Nursing Staff')) {
-                scfhsBox.classList.remove('hidden');
-                scfhsPicBox.classList.remove('hidden');
-            } else {
-                scfhsBox.classList.add('hidden');
-                scfhsPicBox.classList.add('hidden');
-            }
-
-            if (desig === 'Other') customBox.classList.remove('hidden');
-            else customBox.classList.add('hidden');
+            const isNursing = desig.includes('Nursing Staff');
+            document.getElementById('scfhs-box').classList.toggle('hidden', !isNursing);
+            document.getElementById('scfhs-pic-box').classList.toggle('hidden', !isNursing);
+            document.getElementById('custom-desig-box').classList.toggle('hidden', desig !== 'Other');
         }
 
+        // Multi-Level Expiry Alert Logic (<15 days critical, <30 days warning, >30 days valid)
         function checkExpiryStatus(dateStr) {
-            if (!dateStr) return { badge: 'N/A', class: '', isExpiring: false };
+            if (!dateStr) return { badge: 'N/A', class: 'badge-blue', level: 'valid', days: 999 };
             const diff = Math.ceil((new Date(dateStr) - new Date()) / (1000 * 60 * 60 * 24));
-            const isExpiring = diff <= 30;
-            return { 
-                badge: isExpiring ? `${dateStr} ⚠️` : dateStr, 
-                class: isExpiring ? 'badge-red' : 'badge-green',
-                isExpiring: isExpiring
-            };
+            if (diff <= 15) {
+                return { badge: `${dateStr} 🔴 (<15d)`, class: 'badge-critical', level: 'critical', days: diff };
+            } else if (diff <= 30) {
+                return { badge: `${dateStr} 🟠 (<30d)`, class: 'badge-warning', level: 'warning', days: diff };
+            } else {
+                return { badge: `${dateStr} 🟢`, class: 'badge-green', level: 'valid', days: diff };
+            }
         }
 
-        function toggleExpiredFilter() {
-            showOnlyExpired = !showOnlyExpired;
+        // Pill Filters Switcher
+        function setPillFilter(filterType) {
+            currentPillFilter = filterType;
             window.activeDesignationFilter = null;
-            document.getElementById('search-input').value = '';
-
-            const cardBox = document.getElementById('alert-card-box');
-            const heading = document.getElementById('table-heading');
+            document.querySelectorAll('.pill-btn').forEach(btn => btn.classList.remove('active'));
             
-            if(showOnlyExpired) {
-                cardBox.style.background = '#fee2e2';
-                heading.innerText = "⚠️ Expiring Documents List (Filtered)";
-                heading.style.color = "#e11d48";
-            } else {
-                cardBox.style.background = 'var(--card-bg)';
-                heading.innerText = "📋 Employee Directory";
-                heading.style.color = "#0f172a";
-            }
+            if (filterType === 'all') document.getElementById('pill-all').classList.add('active');
+            else if (filterType === 'Active') document.getElementById('pill-active').classList.add('active');
+            else if (filterType === 'On Leave') document.getElementById('pill-leave').classList.add('active');
+            else if (filterType === 'Resigned/Terminated') document.getElementById('pill-resigned').classList.add('active');
+            else if (filterType === 'alerts') document.getElementById('pill-alerts').classList.add('active');
+
             renderData();
         }
 
         function resetSearchFilter() {
-            showOnlyExpired = false;
+            currentPillFilter = 'all';
             window.activeDesignationFilter = null;
             document.getElementById('search-input').value = '';
-            document.getElementById('table-heading').innerText = "📋 Employee Directory";
-            document.getElementById('table-heading').style.color = "#0f172a";
-            document.getElementById('alert-card-box').style.background = 'var(--card-bg)';
+            document.querySelectorAll('.pill-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('pill-all').classList.add('active');
             renderData();
         }
 
         function handleManualSearchInput() {
             window.activeDesignationFilter = null;
-            document.getElementById('table-heading').innerText = "📋 Employee Directory";
-            document.getElementById('table-heading').style.color = "#0f172a";
             renderData();
         }
 
         function getFilteredEmployees() {
             const searchVal = document.getElementById('search-input') ? document.getElementById('search-input').value.trim().toLowerCase() : '';
 
-            return (window.employees || []).filter(emp => {
-                if (showOnlyExpired) {
-                    const iqamaStatus = checkExpiryStatus(emp.iqamaExp);
-                    const passportStatus = checkExpiryStatus(emp.passportExp);
+            let list = (window.employees || []).filter(emp => {
+                // Status Filter Pills Logic
+                if (currentPillFilter === 'alerts') {
+                    const iqStatus = checkExpiryStatus(emp.iqamaExp);
+                    const passStatus = checkExpiryStatus(emp.passportExp);
                     const scfhsStatus = checkExpiryStatus(emp.scfhsExp);
-                    const hasAlert = iqamaStatus.isExpiring || passportStatus.isExpiring || (emp.scfhsExp && scfhsStatus.isExpiring);
-                    if (!hasAlert) return false;
+                    if (iqStatus.level === 'valid' && passStatus.level === 'valid' && scfhsStatus.level === 'valid') return false;
+                } else if (currentPillFilter !== 'all') {
+                    if ((emp.status || 'Active') !== currentPillFilter) return false;
                 }
 
+                // Designation Filter
                 if (window.activeDesignationFilter) {
-                    if (String(emp.designation).trim().toLowerCase() !== window.activeDesignationFilter.trim().toLowerCase()) {
-                        return false;
-                    }
+                    if (String(emp.designation).trim().toLowerCase() !== window.activeDesignationFilter.trim().toLowerCase()) return false;
                 } else if (searchVal) {
-                    const combinedText = `${emp.id} ${emp.name} ${emp.designation} ${emp.project} ${emp.mobile} ${emp.nationality} ${emp.iqama}`.toLowerCase();
-                    const searchWords = searchVal.split(/\s+/);
-                    const allWordsMatch = searchWords.every(word => {
-                        const regex = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-                        return regex.test(combinedText);
-                    });
-
-                    if (!allWordsMatch) return false;
+                    const combinedText = `${emp.id} ${emp.name} ${emp.designation} ${emp.project} ${emp.mobile} ${emp.nationality} ${emp.iqama} ${emp.status}`.toLowerCase();
+                    const words = searchVal.split(/\s+/);
+                    return words.every(word => combinedText.includes(word));
                 }
 
                 return true;
             });
+
+            // Advanced Table Sorting Logic
+            const sortMode = document.getElementById('sort-select') ? document.getElementById('sort-select').value : 'id-asc';
+            list.sort((a, b) => {
+                if (sortMode === 'id-asc') return String(a.id).localeCompare(String(b.id), undefined, {numeric: true});
+                if (sortMode === 'id-desc') return String(b.id).localeCompare(String(a.id), undefined, {numeric: true});
+                if (sortMode === 'name-asc') return String(a.name).localeCompare(String(b.name));
+                if (sortMode === 'name-desc') return String(b.name).localeCompare(String(a.name));
+                if (sortMode === 'salary-high') return (b.salary || 0) - (a.salary || 0);
+                if (sortMode === 'salary-low') return (a.salary || 0) - (b.salary || 0);
+                if (sortMode === 'expiry-near') {
+                    const getMinDays = (e) => Math.min(checkExpiryStatus(e.iqamaExp).days, checkExpiryStatus(e.passportExp).days);
+                    return getMinDays(a) - getMinDays(b);
+                }
+                return 0;
+            });
+
+            return list;
         }
 
         function renderData() {
             const tbody = document.getElementById('employee-table-body');
-            if(!tbody) return;
+            if (!tbody) return;
             tbody.innerHTML = '';
 
-            let expiringAlerts = 0, totalSalary = 0;
+            let totalStaff = (window.employees || []).length;
+            let activeStaff = 0;
+            let totalSalary = 0;
+            let alertCount = 0;
+            let nationalities = new Set();
 
-            (window.employees || []).forEach((emp) => {
-                const iqamaStatus = checkExpiryStatus(emp.iqamaExp);
-                const passportStatus = checkExpiryStatus(emp.passportExp);
-                const scfhsStatus = checkExpiryStatus(emp.scfhsExp);
-                if (iqamaStatus.isExpiring || passportStatus.isExpiring || (emp.scfhsExp && scfhsStatus.isExpiring)) {
-                    expiringAlerts++;
-                }
+            (window.employees || []).forEach(emp => {
+                const status = emp.status || 'Active';
+                if (status === 'Active') activeStaff++;
                 totalSalary += (emp.salary || 0);
+                if (emp.nationality) nationalities.add(emp.nationality);
+
+                const iqStatus = checkExpiryStatus(emp.iqamaExp);
+                const passStatus = checkExpiryStatus(emp.passportExp);
+                const scfhsStatus = checkExpiryStatus(emp.scfhsExp);
+                if (iqStatus.level !== 'valid' || passStatus.level !== 'valid' || scfhsStatus.level !== 'valid') alertCount++;
             });
 
-            document.getElementById('total-employees').innerText = (window.employees || []).length;
-            document.getElementById('expiring-count').innerText = expiringAlerts;
-            document.getElementById('total-salary').innerText = totalSalary.toLocaleString() + ' SAR';
+            // Update Analytics Cards
+            document.getElementById('stat-total').innerText = totalStaff;
+            document.getElementById('stat-active').innerText = activeStaff;
+            document.getElementById('stat-nationalities').innerText = nationalities.size;
+            document.getElementById('stat-avg-salary').innerText = totalStaff > 0 ? Math.round(totalSalary / totalStaff).toLocaleString() : 0;
+            document.getElementById('stat-alerts').innerText = alertCount;
 
             const filteredList = getFilteredEmployees();
 
             if (filteredList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#64748b; font-weight:700;">No matching employees found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:#64748b; font-weight:700;">No matching employees found</td></tr>';
                 return;
             }
 
-            filteredList.forEach((emp) => {
+            filteredList.forEach(emp => {
                 const globalIdx = window.employees.findIndex(e => e.firestoreId === emp.firestoreId);
+                const status = emp.status || 'Active';
+                let statusBadgeClass = 'badge-green';
+                if (status === 'On Leave') statusBadgeClass = 'badge-warning';
+                if (status === 'Resigned/Terminated') statusBadgeClass = 'badge-critical';
 
                 tbody.innerHTML += `
                     <tr>
                         <td><img src="${emp.photo}" class="emp-thumb"></td>
                         <td style="font-weight: 800; color: #0284c7;">${emp.id}</td>
                         <td><b>${emp.name}</b></td>
+                        <td><span class="badge ${statusBadgeClass}">${status}</span></td>
                         <td><b>${emp.designation}</b></td>
                         <td>${emp.project}</td>
                         <td>${emp.mobile}</td>
@@ -1062,10 +1191,8 @@
                             <button onclick="openDetailModal('${emp.firestoreId}')" class="btn-sm btn-view">👁️ View</button>
                             <button onclick="openIDCard(${globalIdx})" class="btn-sm btn-card">🪪 Card</button>
                             <button onclick="sendWhatsApp('${emp.mobile}', '${emp.iqamaExp}')" class="btn-sm btn-wa">💬 WA</button>
-                            ${window.userRole === 'admin' ? `
-                                <button onclick="editEmployee('${emp.firestoreId}')" class="btn-sm btn-edit">✏️</button>
-                                <button onclick="deleteEmployee('${emp.firestoreId}')" class="btn-sm btn-del">🗑️</button>
-                            ` : ''}
+                            <button onclick="editEmployee('${emp.firestoreId}')" class="btn-sm btn-edit">✏️</button>
+                            <button onclick="deleteEmployee('${emp.firestoreId}')" class="btn-sm btn-del">🗑️</button>
                         </td>
                     </tr>
                 `;
@@ -1074,15 +1201,9 @@
 
         function filterByDesignationFromModal(desigName) {
             closeDesignationModal();
-            showOnlyExpired = false;
             window.activeDesignationFilter = desigName;
-            
             document.getElementById('search-input').value = desigName;
-            document.getElementById('table-heading').innerText = `📋 Filtered Staff: ${desigName}`;
-            document.getElementById('table-heading').style.color = "#0284c7";
-            
             renderData();
-            document.querySelector('.table-container').scrollIntoView({ behavior: 'smooth' });
         }
 
         function openDesignationModal() {
@@ -1099,14 +1220,10 @@
             const tbody = document.getElementById('desig-table-body');
             tbody.innerHTML = '';
 
-            let counts = {};
-            let total = 0;
+            let counts = customCounts || {};
+            let total = customTotal !== null ? customTotal : (window.employees || []).length;
 
-            if (customCounts) {
-                counts = customCounts;
-                total = customTotal || 0;
-            } else {
-                total = (window.employees || []).length;
+            if (!customCounts) {
                 (window.employees || []).forEach(emp => {
                     const desig = emp.designation || 'Unassigned';
                     counts[desig] = (counts[desig] || 0) + 1;
@@ -1123,30 +1240,12 @@
                 const percentage = ((count / total) * 100).toFixed(1);
 
                 tbody.innerHTML += `
-                    <tr class="desig-row-clickable" onclick="filterByDesignationFromModal('${desig.replace(/'/g, "\\'")}')" title="Click to view all ${desig}">
+                    <tr style="cursor:pointer;" onclick="filterByDesignationFromModal('${desig.replace(/'/g, "\\'")}')">
                         <td style="font-weight:700; color:#0f172a;">${desig} 🔍</td>
                         <td style="font-weight:800; color:#0284c7;">${count}</td>
                         <td><span class="badge badge-blue">${percentage}%</span></td>
                     </tr>
                 `;
-            }
-
-            tbody.innerHTML += `
-                <tr style="background: #f0f9ff; font-weight: 800; border-top: 2px solid #bae6fd;">
-                    <td style="color:#0369a1;">TOTAL WORKFORCE</td>
-                    <td style="color:#0369a1;">${total}</td>
-                    <td><span class="badge badge-green">100%</span></td>
-                </tr>
-            `;
-        }
-
-        function loadSelectedMonthHistory() {
-            const val = document.getElementById('history-month-select').value;
-            if (val === 'current') {
-                renderDesignationTable();
-            } else if (window.monthlySnapshots && window.monthlySnapshots[val]) {
-                const snap = window.monthlySnapshots[val];
-                renderDesignationTable(snap.breakdown, snap.totalStaff);
             }
         }
 
@@ -1162,8 +1261,12 @@
             document.getElementById('pop-name').innerText = emp.name;
             document.getElementById('pop-desig').innerText = emp.designation;
             document.getElementById('pop-id').innerText = "ID: " + emp.id;
+            
+            const status = emp.status || 'Active';
+            document.getElementById('pop-status-badge').innerText = status;
+            document.getElementById('pop-status-badge').className = `badge ${status === 'Active' ? 'badge-green' : status === 'On Leave' ? 'badge-warning' : 'badge-critical'}`;
 
-            document.getElementById('pop-uploaded-at').innerText = emp.uploadedAt || 'Not Available';
+            document.getElementById('pop-uploaded-at').innerText = emp.uploadedAt || 'N/A';
             document.getElementById('pop-nat').innerText = emp.nationality || 'N/A';
             document.getElementById('pop-project').innerText = emp.project || 'N/A';
             document.getElementById('pop-mobile').innerText = emp.mobile || 'N/A';
@@ -1173,17 +1276,17 @@
             document.getElementById('pop-last-date').innerText = emp.lastDate || 'N/A';
             document.getElementById('pop-reason').innerText = emp.leavingReason || 'N/A';
 
-            document.getElementById('pop-iqama').innerHTML = `${emp.iqama || 'N/A'}<br><span class="badge ${iqamaStatus.class}">Exp: ${iqamaStatus.badge}</span>`;
-            document.getElementById('pop-passport').innerHTML = `${emp.passport || 'N/A'}<br><span class="badge ${passportStatus.class}">Exp: ${passportStatus.badge}</span>`;
-            document.getElementById('pop-scfhs').innerHTML = emp.scfhsExp ? `<span class="badge ${scfhsStatus.class}">Exp: ${scfhsStatus.badge}</span>` : 'N/A';
+            document.getElementById('pop-iqama').innerHTML = `${emp.iqama || 'N/A'}<br><span class="badge ${iqamaStatus.class}">${iqamaStatus.badge}</span>`;
+            document.getElementById('pop-passport').innerHTML = `${emp.passport || 'N/A'}<br><span class="badge ${passportStatus.class}">${passportStatus.badge}</span>`;
+            document.getElementById('pop-scfhs').innerHTML = emp.scfhsExp ? `<span class="badge ${scfhsStatus.class}">${scfhsStatus.badge}</span>` : 'N/A';
             document.getElementById('pop-emergency').innerText = emp.emergency || 'N/A';
 
             let docsHtml = '';
-            if(emp.iqamaPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'iqamaPic', 'Iqama Document')">📄 Iqama Document</button>`;
-            if(emp.passportPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'passportPic', 'Passport Document')">📄 Passport Document</button>`;
-            if(emp.scfhsPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'scfhsPic', 'SCFHS Document')">📄 SCFHS Card</button>`;
-            if(emp.baladiyaPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'baladiyaPic', 'Baladiya Document')">📄 Baladiya Card</button>`;
-            if(emp.reasonPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'reasonPic', 'Leaving Reason Paper')">📄 Reason Paper Scan</button>`;
+            if(emp.iqamaPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'iqamaPic', 'Iqama Document')">📄 Iqama</button>`;
+            if(emp.passportPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'passportPic', 'Passport Document')">📄 Passport</button>`;
+            if(emp.scfhsPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'scfhsPic', 'SCFHS Card')">📄 SCFHS</button>`;
+            if(emp.baladiyaPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'baladiyaPic', 'Baladiya Document')">📄 Baladiya</button>`;
+            if(emp.reasonPic) docsHtml += `<button class="doc-link" onclick="openDocViewer('${emp.firestoreId}', 'reasonPic', 'Leaving Reason Paper')">📄 Reason Paper</button>`;
             if(!docsHtml) docsHtml = '<span style="color:#94a3b8; font-size:12px;">No documents attached</span>';
 
             document.getElementById('pop-docs').innerHTML = docsHtml;
@@ -1192,31 +1295,26 @@
 
         function closeDetailModal() { document.getElementById('detail-modal').style.display = 'none'; }
 
-        // PDF and Image Viewer Logic
         function openDocViewer(firestoreId, fieldKey, title) {
             const emp = window.employees.find(e => e.firestoreId === firestoreId);
             if (!emp || !emp[fieldKey]) return alert(title + ' file not attached!');
 
             const fileData = emp[fieldKey];
-            document.getElementById('doc-title').innerText = title + ' - ' + emp.name;
+            document.getElementById('doc-title').innerText = `${title} - ${emp.name}`;
 
             const imgTarget = document.getElementById('doc-img-target');
             const iframeTarget = document.getElementById('doc-iframe-target');
             const openLink = document.getElementById('doc-open-link');
 
-            // Detect PDF Data URL or PDF extension
             if (fileData.startsWith('data:application/pdf') || fileData.toLowerCase().includes('.pdf')) {
                 imgTarget.style.display = 'none';
                 iframeTarget.style.display = 'block';
                 iframeTarget.src = fileData;
-                
                 openLink.style.display = 'inline-flex';
                 openLink.href = fileData;
             } else {
-                // Regular Image
                 iframeTarget.style.display = 'none';
                 openLink.style.display = 'none';
-                
                 imgTarget.style.display = 'block';
                 imgTarget.src = fileData;
             }
@@ -1236,6 +1334,7 @@
             document.getElementById('edit-doc-id').value = firestoreId;
             document.getElementById('empId').value = emp.id;
             document.getElementById('empName').value = emp.name;
+            document.getElementById('empStatus').value = emp.status || 'Active';
             document.getElementById('project').value = emp.project || '';
             document.getElementById('mobile').value = emp.mobile || '';
             document.getElementById('startDate').value = emp.startDate || '';
@@ -1252,11 +1351,11 @@
 
             document.getElementById('nationality').value = emp.nationality || '';
             handleNationalityChange();
-            if (document.getElementById('nationality').value === 'Other') { document.getElementById('customNationality').value = emp.nationality; }
+            if (document.getElementById('nationality').value === 'Other') document.getElementById('customNationality').value = emp.nationality;
 
             document.getElementById('designation').value = emp.designation || '';
             handleDesignationChange();
-            if (document.getElementById('designation').value === 'Other') { document.getElementById('customDesignation').value = emp.designation; }
+            if (document.getElementById('designation').value === 'Other') document.getElementById('customDesignation').value = emp.designation;
 
             document.getElementById('form-title').innerText = "✏️ Edit Employee Profile";
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1285,14 +1384,10 @@
         function closeModal() { document.getElementById('id-card-modal').style.display = 'none'; }
 
         window.onclick = function(event) {
-            const detailModal = document.getElementById('detail-modal');
-            const idModal = document.getElementById('id-card-modal');
-            const docViewerModal = document.getElementById('doc-viewer-modal');
-            const desigModal = document.getElementById('desig-modal');
-            if (event.target === detailModal) detailModal.style.display = 'none';
-            if (event.target === idModal) idModal.style.display = 'none';
-            if (event.target === docViewerModal) closeDocViewer();
-            if (event.target === desigModal) desigModal.style.display = 'none';
+            if (event.target === document.getElementById('detail-modal')) closeDetailModal();
+            if (event.target === document.getElementById('id-card-modal')) closeModal();
+            if (event.target === document.getElementById('doc-viewer-modal')) closeDocViewer();
+            if (event.target === document.getElementById('desig-modal')) closeDesignationModal();
         }
 
         function uploadSystemLogo(event) {
@@ -1336,47 +1431,16 @@
         function exportToCSV() {
             if(!window.employees || window.employees.length === 0) return alert('No records to export!');
             
-            const downloadTime = getCurrentFormattedDateTime();
-            let csv = 'ID,Name,Nationality,Designation,Project,Mobile,Uploaded Date & Time,Start Date,Last Date,Leaving Reason,Iqama,Iqama Expiry,Passport,Passport Expiry,SCFHS Expiry,Salary,Bank,Emergency Contact\n';
+            let csv = 'ID,Name,Status,Nationality,Designation,Project,Mobile,Uploaded Date & Time,Start Date,Last Date,Leaving Reason,Iqama,Iqama Expiry,Passport,Passport Expiry,SCFHS Expiry,Salary,Bank,Emergency Contact\n';
             
             window.employees.forEach(e => {
-                csv += `"${e.id}","${e.name}","${e.nationality}","${e.designation}","${e.project}","${e.mobile}","${e.uploadedAt || 'N/A'}","${e.startDate}","${e.lastDate}","${e.leavingReason}","${e.iqama}","${e.iqamaExp}","${e.passport}","${e.passportExp}","${e.scfhsExp}","${e.salary}","${e.bank}","${e.emergency}"\n`;
+                csv += `"${e.id}","${e.name}","${e.status || 'Active'}","${e.nationality}","${e.designation}","${e.project}","${e.mobile}","${e.uploadedAt || 'N/A'}","${e.startDate}","${e.lastDate}","${e.leavingReason}","${e.iqama}","${e.iqamaExp}","${e.passport}","${e.passportExp}","${e.scfhsExp}","${e.salary}","${e.bank}","${e.emergency}"\n`;
             });
-
-            const now = new Date();
-            const dateFileName = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}-${String(now.getMinutes()).padStart(2,'0')}`;
 
             const a = document.createElement('a'); 
             a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); 
-            a.download = `Al_Majmaah_ALL_Employees_${dateFileName}.csv`; 
+            a.download = `${window.tenantProjectName.replace(/\s+/g, '_')}_Employees.csv`; 
             a.click();
-
-            alert(`📥 Full Database Export Downloaded!\n\n📊 Total Records: ${window.employees.length}\n📅 Download Time: ${downloadTime}\n📁 Filename: Al_Majmaah_ALL_Employees_${dateFileName}.csv`);
-        }
-
-        function exportFilteredToCSV() {
-            const filteredList = getFilteredEmployees();
-
-            if (!filteredList || filteredList.length === 0) {
-                return alert('⚠️ No filtered records found to export!');
-            }
-
-            const downloadTime = getCurrentFormattedDateTime();
-            let csv = 'ID,Name,Nationality,Designation,Project,Mobile,Uploaded Date & Time,Start Date,Last Date,Leaving Reason,Iqama,Iqama Expiry,Passport,Passport Expiry,SCFHS Expiry,Salary,Bank,Emergency Contact\n';
-            
-            filteredList.forEach(e => {
-                csv += `"${e.id}","${e.name}","${e.nationality}","${e.designation}","${e.project}","${e.mobile}","${e.uploadedAt || 'N/A'}","${e.startDate}","${e.lastDate}","${e.leavingReason}","${e.iqama}","${e.iqamaExp}","${e.passport}","${e.passportExp}","${e.scfhsExp}","${e.salary}","${e.bank}","${e.emergency}"\n`;
-            });
-
-            const now = new Date();
-            const dateFileName = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}-${String(now.getMinutes()).padStart(2,'0')}`;
-
-            const a = document.createElement('a'); 
-            a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); 
-            a.download = `Al_Majmaah_Filtered_Employees_${dateFileName}.csv`; 
-            a.click();
-
-            alert(`📥 Filtered CSV Report Downloaded Successfully!\n\n📊 Exported Records: ${filteredList.length}\n📅 Download Time: ${downloadTime}\n📁 Filename: Al_Majmaah_Filtered_Employees_${dateFileName}.csv`);
         }
     </script>
 </body>
