@@ -48,6 +48,13 @@
         .btn-purple { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
         .btn-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
         
+        .btn-clear-file {
+            background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5;
+            border-radius: 6px; padding: 2px 8px; font-size: 10px; cursor: pointer;
+            margin-left: 6px; font-weight: 700; transition: all 0.2s;
+        }
+        .btn-clear-file:hover { background: #fca5a5; color: #991b1b; }
+
         .btn-sm { padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin: 2px; }
         .btn-edit { background: #fef3c7; color: #b45309; }
         .btn-del { background: #fee2e2; color: #991b1b; }
@@ -75,6 +82,7 @@
         /* Dashboard Stats Grid */
         .stats-grid { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
         .stat-card { background: var(--card-bg); padding: 16px 18px; border-radius: 18px; border: 1px solid var(--glass-border); flex: 1; min-width: 180px; transition: all 0.2s ease; }
+        .stat-card:hover { transform: translateY(-2px); }
         .stat-card h3 { font-size: 22px; font-weight: 900; }
         .stat-card p { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 4px; }
         
@@ -86,7 +94,7 @@
         .card-box { background: var(--card-bg); backdrop-filter: blur(16px); padding: 20px; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 20px; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
         .field-group { display: flex; flex-direction: column; gap: 5px; }
-        .field-group label { font-size: 11px; font-weight: 700; color: #334155; text-transform: uppercase; }
+        .field-group label { font-size: 11px; font-weight: 700; color: #334155; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
         input, select, textarea { background: #fff; border: 2px solid #e0f2fe; padding: 10px 12px; border-radius: 12px; font-size: 13px; outline: none; width: 100%; transition: all 0.2s ease; }
         textarea { resize: vertical; min-height: 42px; }
 
@@ -105,7 +113,8 @@
         td { padding: 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
         .emp-thumb { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; border: 2px solid #bae6fd; }
         
-        /* Clickable ID Cell Styling */
+        .clickable-row { cursor: pointer; transition: background 0.15s; }
+        .clickable-row:hover { background: #f0f9ff; }
         .clickable-id { font-weight: 800; color: #0284c7; cursor: pointer; text-decoration: underline; transition: color 0.2s; }
         .clickable-id:hover { color: #2563eb; }
 
@@ -242,7 +251,7 @@
             </div>
         </div>
 
-        <!-- Analytics Dashboard -->
+        <!-- Analytics Dashboard (Avg Salary Removed) -->
         <div class="stats-grid">
             <div class="stat-card" onclick="setPillFilter('all')" style="cursor: pointer;">
                 <p>TOTAL WORKFORCE</p>
@@ -252,13 +261,9 @@
                 <p>ACTIVE STAFF 🟢</p>
                 <h3 id="stat-active" style="color: #059669;">0</h3>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="focusNationalityFilter()" style="cursor: pointer;" title="Click to filter by nationality">
                 <p>NATIONALITIES 🌍</p>
                 <h3 id="stat-nationalities" style="color: #8b5cf6;">0</h3>
-            </div>
-            <div class="stat-card">
-                <p>AVG SALARY (SAR)</p>
-                <h3 id="stat-avg-salary" style="color: #d97706;">0</h3>
             </div>
             <div class="stat-card" onclick="setPillFilter('alerts')" style="cursor: pointer;">
                 <p>DOCUMENT ALERTS 🔍</p>
@@ -275,7 +280,13 @@
             <form id="employee-form" class="form-grid" autocomplete="off">
                 <input type="hidden" id="edit-doc-id" value="">
 
-                <div class="field-group"><label>Employee Photo (Drag / Paste Image)</label><input type="file" id="photo" accept="image/*" onchange="handleFileRead(event, 'photo')" data-key="photo"></div>
+                <div class="field-group">
+                    <label>
+                        Employee Photo
+                        <button type="button" class="btn-clear-file" onclick="clearSelectedFile('photo', 'photo')">❌ Remove</button>
+                    </label>
+                    <input type="file" id="photo" accept="image/*" onchange="handleFileRead(event, 'photo')" data-key="photo">
+                </div>
                 <div class="field-group"><label>Employee ID *</label><input type="text" id="empId" placeholder="EMP-101" required autocomplete="off"></div>
                 <div class="field-group"><label>Full Name *</label><input type="text" id="empName" placeholder="Full Name" required autocomplete="off"></div>
 
@@ -346,7 +357,13 @@
                     </div>
                 </div>
                 
-                <div class="field-group"><label style="color: #0284c7;">Iqama (Image / PDF)</label><input type="file" id="iqamaPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'iqamaPic')" data-key="iqamaPic"></div>
+                <div class="field-group">
+                    <label style="color: #0284c7;">
+                        Iqama (Image / PDF)
+                        <button type="button" class="btn-clear-file" onclick="clearSelectedFile('iqamaPic', 'iqamaPicInput')">❌ Remove</button>
+                    </label>
+                    <input type="file" id="iqamaPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'iqamaPic')" data-key="iqamaPic">
+                </div>
 
                 <div class="field-group"><label>Passport Number</label><input type="text" id="passport" placeholder="Passport No" autocomplete="off"></div>
                 
@@ -359,7 +376,13 @@
                     </div>
                 </div>
 
-                <div class="field-group"><label style="color: #0284c7;">Passport (Image / PDF)</label><input type="file" id="passportPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'passportPic')" data-key="passportPic"></div>
+                <div class="field-group">
+                    <label style="color: #0284c7;">
+                        Passport (Image / PDF)
+                        <button type="button" class="btn-clear-file" onclick="clearSelectedFile('passportPic', 'passportPicInput')">❌ Remove</button>
+                    </label>
+                    <input type="file" id="passportPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'passportPic')" data-key="passportPic">
+                </div>
 
                 <div id="scfhs-box" class="field-group hidden">
                     <label style="color: #0284c7;">SCFHS Expiry (Medical)</label>
@@ -370,9 +393,21 @@
                     </div>
                 </div>
 
-                <div id="scfhs-pic-box" class="field-group hidden"><label style="color: #0284c7;">SCFHS Card (Image / PDF)</label><input type="file" id="scfhsPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'scfhsPic')" data-key="scfhsPic"></div>
+                <div id="scfhs-pic-box" class="field-group hidden">
+                    <label style="color: #0284c7;">
+                        SCFHS Card (Image / PDF)
+                        <button type="button" class="btn-clear-file" onclick="clearSelectedFile('scfhsPic', 'scfhsPicInput')">❌ Remove</button>
+                    </label>
+                    <input type="file" id="scfhsPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'scfhsPic')" data-key="scfhsPic">
+                </div>
 
-                <div class="field-group"><label style="color: #0284c7;">Baladiya / Health Card (Image / PDF)</label><input type="file" id="baladiyaPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'baladiyaPic')" data-key="baladiyaPic"></div>
+                <div class="field-group">
+                    <label style="color: #0284c7;">
+                        Baladiya / Health Card
+                        <button type="button" class="btn-clear-file" onclick="clearSelectedFile('baladiyaPic', 'baladiyaPicInput')">❌ Remove</button>
+                    </label>
+                    <input type="file" id="baladiyaPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'baladiyaPic')" data-key="baladiyaPic">
+                </div>
 
                 <div class="field-group"><label>Salary (SAR)</label><input type="number" id="salary" placeholder="Salary" autocomplete="off"></div>
                 <div class="field-group"><label>Bank Name</label><input type="text" id="bank" placeholder="Bank Name" autocomplete="off"></div>
@@ -397,7 +432,13 @@
                 </div>
 
                 <div class="field-group" style="grid-column: span 2;"><label style="color: #e11d48;">Reason for Leaving</label><input type="text" id="leavingReason" placeholder="Reason for leaving / Termination details..." autocomplete="off"></div>
-                <div class="field-group"><label style="color: #e11d48;">Reason Paper (Image / PDF)</label><input type="file" id="reasonPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'reasonPic')" data-key="reasonPic"></div>
+                <div class="field-group">
+                    <label style="color: #e11d48;">
+                        Reason Paper
+                        <button type="button" class="btn-clear-file" onclick="clearSelectedFile('reasonPic', 'reasonPicInput')">❌ Remove</button>
+                    </label>
+                    <input type="file" id="reasonPicInput" accept="image/*,application/pdf,.pdf" onchange="handleFileRead(event, 'reasonPic')" data-key="reasonPic">
+                </div>
 
                 <button type="submit" id="save-btn" class="btn-stylish btn-success" style="grid-column: 1 / -1; margin-top: 15px;">💾 Save Employee Record to Main Server Database</button>
             </form>
@@ -406,9 +447,20 @@
         <!-- Directory Table Box -->
         <div class="card-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h2 style="font-size: 16px;" id="table-heading">📋 Employee Directory</h2>
+                <h2 style="font-size: 16px; display:flex; align-items:center; gap:8px;" id="table-heading">
+                    📋 Employee Directory
+                    <span id="active-desig-filter-tag" class="badge badge-purple hidden" style="font-size:11px;">
+                        Filtered: <span id="active-desig-filter-name"></span>
+                        <b onclick="clearDesignationFilter()" style="cursor:pointer; margin-left:6px; color:#ef4444;">✖</b>
+                    </span>
+                </h2>
                 
                 <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <!-- Upgraded Nationality Filter Dropdown -->
+                    <select id="nationality-filter-select" onchange="handleNationalityFilterChange(this.value)" style="padding: 8px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; width: auto; border: 2px solid #bae6fd; color: #0369a1;">
+                        <option value="ALL">🌍 All Nationalities</option>
+                    </select>
+
                     <select id="sort-select" onchange="renderData()" style="padding: 8px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; width: auto; border: 2px solid #bae6fd;">
                         <option value="id-asc">Sort: Emp ID (Asc)</option>
                         <option value="id-desc">Sort: Emp ID (Desc)</option>
@@ -541,22 +593,22 @@
         </div>
     </div>
 
-    <!-- Designation Breakdown Modal -->
+    <!-- Designation Breakdown Modal (Clickable Rows, % Removed) -->
     <div id="desig-modal" class="modal" style="z-index: 1050;">
-        <div class="detail-card-wrap" style="max-width: 750px;">
+        <div class="detail-card-wrap" style="max-width: 600px;">
             <button class="close-popup-btn" onclick="closeDesignationModal()">&times;</button>
             
             <div style="border-bottom: 2px solid #e0f2fe; padding-bottom: 10px; margin-bottom: 15px;">
-                <h2 style="font-size: 18px; color: #0369a1;">📊 Designation Breakdown & History</h2>
+                <h2 style="font-size: 18px; color: #0369a1;">📊 Designation Breakdown</h2>
+                <p style="font-size: 11px; color: #64748b; font-weight: 600;">Click on any designation to filter employees list.</p>
             </div>
 
             <div class="table-container" style="max-height: 400px; overflow-y: auto;">
                 <table>
                     <thead>
                         <tr>
-                            <th>Designation</th>
+                            <th>Designation (Click to Filter)</th>
                             <th>Total Staff</th>
-                            <th>Percentage (%)</th>
                         </tr>
                     </thead>
                     <tbody id="desig-table-body"></tbody>
@@ -580,7 +632,7 @@
     <!-- Centralized Firebase & Master Server Engine -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, writeBatch, getDocs, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -597,21 +649,38 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // Ensure persistent session in local storage
+        setPersistence(auth, browserLocalPersistence).catch(() => {});
+
         window.employees = [];
         window.accountTabs = [];
         window.selectedAccountFilter = 'ALL';
+        window.selectedNationalityFilter = 'ALL';
         window.currentTenantUser = null;
         window.tenantProjectName = "Main Server HR Portal";
         window.currentFiles = { photo: "", iqamaPic: "", passportPic: "", scfhsPic: "", baladiyaPic: "", reasonPic: "" };
         
         let masterUnsubscribe = null;
 
+        // Auto-login recovery on page refresh for Hardcoded Admin Session
+        const savedAdminSession = localStorage.getItem('al_majmaa_admin_session');
+        if (savedAdminSession === 'true') {
+            window.currentTenantUser = {
+                uid: "master_admin_id",
+                email: "admin@almajmaa.com"
+            };
+            window.tenantProjectName = "Al Majmaa Server Admin";
+            document.getElementById('header-project-title').innerText = "MAIN SERVER HR PORTAL (ADMIN)";
+            listenToEmployeesCollection();
+            showDashboard();
+        }
+
         // Firebase Auth Listener
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 window.currentTenantUser = user;
+                localStorage.setItem('al_majmaa_admin_session', 'false');
                 
-                // Retrieve user profile
                 const userDoc = await getDoc(doc(db, "tenants", user.uid));
                 if (userDoc.exists()) {
                     window.tenantProjectName = userDoc.data().projectName || user.email;
@@ -620,17 +689,14 @@
                 }
                 
                 document.getElementById('header-project-title').innerText = "MAIN SERVER HR PORTAL";
-                
-                // Connect to Central Collection: employees_v2
                 listenToEmployeesCollection();
                 showDashboard();
-            } else if (!window.currentTenantUser) {
+            } else if (!localStorage.getItem('al_majmaa_admin_session') || localStorage.getItem('al_majmaa_admin_session') !== 'true') {
                 document.getElementById('app-container').style.display = 'none';
                 document.getElementById('login-container').style.display = 'flex';
             }
         });
 
-        // Function to listen to Firestore employees database
         function listenToEmployeesCollection() {
             const masterCollection = collection(db, "employees_v2");
             if (masterUnsubscribe) masterUnsubscribe();
@@ -653,6 +719,7 @@
 
                 window.accountTabs = Array.from(accountsMap.values());
                 renderAccountHolderTabs();
+                updateNationalityDropdownOptions();
                 renderData();
             });
         }
@@ -677,14 +744,14 @@
             }
         };
 
-        // Login Handler (Including Hardcoded Admin Logic)
+        // Login Handler
         window.handleAuthLogin = async function(e) {
             e.preventDefault();
             const inputUser = document.getElementById('login-email').value.trim();
             const inputPass = document.getElementById('login-pass').value.trim();
 
-            // Direct Server Admin Credential Check
             if ((inputUser.toLowerCase() === "admin") && inputPass === "Almajmaa123") {
+                localStorage.setItem('al_majmaa_admin_session', 'true');
                 window.currentTenantUser = {
                     uid: "master_admin_id",
                     email: "admin@almajmaa.com"
@@ -698,7 +765,6 @@
                 return;
             }
 
-            // Standard Firebase Email/Password Auth
             try {
                 await signInWithEmailAndPassword(auth, inputUser, inputPass);
             } catch (err) {
@@ -707,13 +773,13 @@
         };
 
         window.handleLogout = function() {
+            localStorage.removeItem('al_majmaa_admin_session');
             window.currentTenantUser = null;
             signOut(auth).catch(() => {});
             document.getElementById('app-container').style.display = 'none';
             document.getElementById('login-container').style.display = 'flex';
         };
 
-        // Render Account Holder Tabs
         window.renderAccountHolderTabs = function() {
             const tabsList = document.getElementById('account-tabs-list');
             const countLabel = document.getElementById('account-holder-count');
@@ -722,7 +788,6 @@
             tabsList.innerHTML = '';
             countLabel.innerText = `${window.accountTabs.length} Accounts Registered`;
 
-            // "All Accounts" Tab
             const allActive = window.selectedAccountFilter === 'ALL' ? 'active' : '';
             tabsList.innerHTML += `
                 <button class="account-tab-btn ${allActive}" onclick="selectAccountFilter('ALL')">
@@ -730,7 +795,6 @@
                 </button>
             `;
 
-            // Tabs for each Account Holder
             window.accountTabs.forEach(acc => {
                 const isActive = window.selectedAccountFilter === acc.email ? 'active' : '';
                 tabsList.innerHTML += `
@@ -755,7 +819,6 @@
             const editDocId = document.getElementById('edit-doc-id').value;
             const empIdVal = document.getElementById('empId').value.trim();
 
-            // Strict Unique ID Restriction
             const duplicate = window.employees.find(e => String(e.id).toLowerCase() === empIdVal.toLowerCase() && e.firestoreId !== editDocId);
             if (duplicate) {
                 return alert(`⚠️ Employee with ID (${empIdVal}) already exists! Duplicate entry prohibited.`);
@@ -778,12 +841,12 @@
                 projectName: window.tenantProjectName,
                 uploadedAt: uploadTime,
                 status: document.getElementById('empStatus').value || 'Active',
-                photo: window.currentFiles.photo || existingEmp.photo || defaultAvatar,
-                iqamaPic: window.currentFiles.iqamaPic || existingEmp.iqamaPic || "",
-                passportPic: window.currentFiles.passportPic || existingEmp.passportPic || "",
-                scfhsPic: window.currentFiles.scfhsPic || existingEmp.scfhsPic || "",
-                baladiyaPic: window.currentFiles.baladiyaPic || existingEmp.baladiyaPic || "",
-                reasonPic: window.currentFiles.reasonPic || existingEmp.reasonPic || "",
+                photo: window.currentFiles.photo !== undefined ? window.currentFiles.photo : (existingEmp.photo || defaultAvatar),
+                iqamaPic: window.currentFiles.iqamaPic !== undefined ? window.currentFiles.iqamaPic : (existingEmp.iqamaPic || ""),
+                passportPic: window.currentFiles.passportPic !== undefined ? window.currentFiles.passportPic : (existingEmp.passportPic || ""),
+                scfhsPic: window.currentFiles.scfhsPic !== undefined ? window.currentFiles.scfhsPic : (existingEmp.scfhsPic || ""),
+                baladiyaPic: window.currentFiles.baladiyaPic !== undefined ? window.currentFiles.baladiyaPic : (existingEmp.baladiyaPic || ""),
+                reasonPic: window.currentFiles.reasonPic !== undefined ? window.currentFiles.reasonPic : (existingEmp.reasonPic || ""),
                 id: empIdVal,
                 name: document.getElementById('empName').value || 'N/A',
                 nationality: finalNationality || 'N/A',
@@ -1029,6 +1092,17 @@
             reader.readAsDataURL(file);
         }
 
+        // Feature: Clear / Remove attached file
+        function clearSelectedFile(key, inputId) {
+            window.currentFiles[key] = "";
+            const inputElem = document.getElementById(inputId);
+            if (inputElem) {
+                inputElem.value = "";
+                inputElem.classList.remove('file-loaded');
+            }
+            alert("❌ Attached file removed!");
+        }
+
         function syncDatePicker(inputId, selectedVal) {
             document.getElementById(inputId).value = selectedVal;
         }
@@ -1098,6 +1172,7 @@
         function setPillFilter(filterType) {
             currentPillFilter = filterType;
             window.activeDesignationFilter = null;
+            document.getElementById('active-desig-filter-tag').classList.add('hidden');
             document.querySelectorAll('.pill-btn').forEach(btn => btn.classList.remove('active'));
             
             if (filterType === 'all') document.getElementById('pill-all').classList.add('active');
@@ -1112,6 +1187,9 @@
         function resetSearchFilter() {
             currentPillFilter = 'all';
             window.activeDesignationFilter = null;
+            window.selectedNationalityFilter = 'ALL';
+            document.getElementById('nationality-filter-select').value = 'ALL';
+            document.getElementById('active-desig-filter-tag').classList.add('hidden');
             document.getElementById('search-input').value = '';
             document.querySelectorAll('.pill-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('pill-all').classList.add('active');
@@ -1119,17 +1197,53 @@
         }
 
         function handleManualSearchInput() {
-            window.activeDesignationFilter = null;
             renderData();
+        }
+
+        function focusNationalityFilter() {
+            const selectElem = document.getElementById('nationality-filter-select');
+            if (selectElem) {
+                selectElem.focus();
+                selectElem.style.borderColor = '#0284c7';
+                setTimeout(() => selectElem.style.borderColor = '#bae6fd', 2000);
+            }
+        }
+
+        function handleNationalityFilterChange(val) {
+            window.selectedNationalityFilter = val;
+            renderData();
+        }
+
+        function updateNationalityDropdownOptions() {
+            const selectElem = document.getElementById('nationality-filter-select');
+            if (!selectElem) return;
+            
+            const nats = new Set();
+            (window.employees || []).forEach(e => {
+                if (e.nationality && e.nationality.trim()) nats.add(e.nationality.trim());
+            });
+
+            let html = '<option value="ALL">🌍 All Nationalities</option>';
+            Array.from(nats).sort().forEach(nat => {
+                const count = (window.employees || []).filter(e => e.nationality === nat).length;
+                html += `<option value="${nat}">${nat} (${count})</option>`;
+            });
+            selectElem.innerHTML = html;
+            selectElem.value = window.selectedNationalityFilter || 'ALL';
         }
 
         function getFilteredEmployees() {
             const searchVal = document.getElementById('search-input') ? document.getElementById('search-input').value.trim().toLowerCase() : '';
 
             let list = (window.employees || []).filter(emp => {
-                // Account Holder Tab Filter
+                // Account Holder Filter
                 if (window.selectedAccountFilter && window.selectedAccountFilter !== 'ALL') {
                     if (emp.creatorEmail !== window.selectedAccountFilter) return false;
+                }
+
+                // Upgraded Nationality Filter
+                if (window.selectedNationalityFilter && window.selectedNationalityFilter !== 'ALL') {
+                    if (String(emp.nationality).trim().toLowerCase() !== window.selectedNationalityFilter.trim().toLowerCase()) return false;
                 }
 
                 // Status Filter
@@ -1142,10 +1256,13 @@
                     if ((emp.status || 'Active') !== currentPillFilter) return false;
                 }
 
-                // Search Filter
+                // Designation Click Filter
                 if (window.activeDesignationFilter) {
                     if (String(emp.designation).trim().toLowerCase() !== window.activeDesignationFilter.trim().toLowerCase()) return false;
-                } else if (searchVal) {
+                }
+
+                // Search Filter
+                if (searchVal) {
                     const combinedText = `${emp.id} ${emp.name} ${emp.designation} ${emp.project} ${emp.mobile} ${emp.nationality} ${emp.iqama} ${emp.status} ${emp.creatorEmail} ${emp.projectName}`.toLowerCase();
                     const words = searchVal.split(/\s+/);
                     return words.every(word => combinedText.includes(word));
@@ -1179,14 +1296,12 @@
 
             let totalStaff = (window.employees || []).length;
             let activeStaff = 0;
-            let totalSalary = 0;
             let alertCount = 0;
             let nationalities = new Set();
 
             (window.employees || []).forEach(emp => {
                 const status = emp.status || 'Active';
                 if (status === 'Active') activeStaff++;
-                totalSalary += (emp.salary || 0);
                 if (emp.nationality) nationalities.add(emp.nationality);
 
                 const iqStatus = checkExpiryStatus(emp.iqamaExp);
@@ -1198,7 +1313,6 @@
             document.getElementById('stat-total').innerText = totalStaff;
             document.getElementById('stat-active').innerText = activeStaff;
             document.getElementById('stat-nationalities').innerText = nationalities.size;
-            document.getElementById('stat-avg-salary').innerText = totalStaff > 0 ? Math.round(totalSalary / totalStaff).toLocaleString() : 0;
             document.getElementById('stat-alerts').innerText = alertCount;
 
             const filteredList = getFilteredEmployees();
@@ -1220,7 +1334,6 @@
                 tbody.innerHTML += `
                     <tr>
                         <td><img src="${emp.photo}" class="emp-thumb"></td>
-                        <!-- CLICKABLE ID NUMBER: Opens Profile Modal directly -->
                         <td class="clickable-id" onclick="openDetailModal('${emp.firestoreId}')" title="Click to view full profile">${emp.id}</td>
                         <td><span class="badge badge-purple">${accountLabel}</span></td>
                         <td><b>${emp.name}</b></td>
@@ -1247,6 +1360,20 @@
             document.getElementById('desig-modal').style.display = 'none';
         }
 
+        function filterByDesignation(desig) {
+            window.activeDesignationFilter = desig;
+            document.getElementById('active-desig-filter-name').innerText = desig;
+            document.getElementById('active-desig-filter-tag').classList.remove('hidden');
+            closeDesignationModal();
+            renderData();
+        }
+
+        function clearDesignationFilter() {
+            window.activeDesignationFilter = null;
+            document.getElementById('active-desig-filter-tag').classList.add('hidden');
+            renderData();
+        }
+
         function renderDesignationTable() {
             const tbody = document.getElementById('desig-table-body');
             tbody.innerHTML = '';
@@ -1260,19 +1387,16 @@
             });
 
             if (total === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#94a3b8;">No staff data available</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:#94a3b8;">No staff data available</td></tr>';
                 return;
             }
 
             for (let desig in counts) {
                 const count = counts[desig];
-                const percentage = ((count / total) * 100).toFixed(1);
-
                 tbody.innerHTML += `
-                    <tr>
-                        <td style="font-weight:700; color:#0f172a;">${desig}</td>
-                        <td style="font-weight:800; color:#0284c7;">${count}</td>
-                        <td><span class="badge badge-blue">${percentage}%</span></td>
+                    <tr class="clickable-row" onclick="filterByDesignation('${desig}')" title="Click to view all ${desig} employees">
+                        <td style="font-weight:700; color:#0284c7; text-decoration:underline;">${desig} ↗️</td>
+                        <td style="font-weight:800; color:#0f172a;">${count} Employees</td>
                     </tr>
                 `;
             }
